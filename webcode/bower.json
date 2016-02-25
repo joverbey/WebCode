@@ -1,0 +1,27 @@
+{
+  "name": "WebCode",
+  "description": "Mitch's worst nightmare",
+  "version": "0.0.0",
+  "homepage": "",
+  "license": "Apache",
+  "private": true,
+  "dependencies": {
+    "angular-bootstrap": "~1.1.1",
+    "angular-ui-bootstrap-complete": "~0.6.0",
+    "angular-route": "~1.4.7",
+    "bootstrap": "~3.3.5"
+  },
+  "resolutions": {
+    "angular": "~1.4.5"
+  },
+  "main": "",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/static/components/",
+    "test",
+    "tests"
+  ]
+}

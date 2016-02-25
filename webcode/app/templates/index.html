@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" ng-app="mainModule" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="mainModule" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="mainModule" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="mainModule" class="no-js"> <!--<![endif]-->
+<head>
+  <link rel="icon" href="favicon.ico" />
+  <title>Web Code</title>
+
+  <!-- Bootstrap stuff -->
+  <link rel="stylesheet" href="/static/components/bootstrap/dist/css/bootstrap.min.css">
+  <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">-->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body ng-controller="MainController">
+  <div class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle"  ng-init="navCollapsed = true" ng-click="navCollapsed = !navCollapsed">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a href="/#/" class="navbar-brand" id="logo">Web Code</a>
+      </div>
+      <div class="collapse navbar-collapse" ng-class="!navCollapsed && 'in'">
+        <ul class="nav navbar-nav navbar-left">
+          <li ng-class="{active: $route.current.activetab == 'home'}"><a href="/#/">Home</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right ng-cloak">
+
+          <!-- Show user options to the user -->
+          <li class="dropdown" is-open="isOpen" uib-dropdown>
+            <a href="" class="dropdown-toggle"
+                ng-init="displayName = '{{ display_name }}'; loggedIn = {{ logged_in }}"
+                uib-dropdown-toggle>
+                {% raw %}{{ displayName }}{% endraw %}<span class="caret"></span>
+            </a>
+
+            <!-- If the user is logged in, show their options -->
+            <ul ng-if="loggedIn" class="dropdown-menu" uib-dropdown-menu>
+              <li><a href="/#/settings">Settings</a></li>
+              <li><a ng-click="logOut()" href="">Sign out</a></li>
+            </ul>
+
+            <!-- If the user isn't logged in, show them the login form -->
+            <div ng-if="!loggedIn" ng-click="$event.stopPropagation()" class="dropdown-menu login-dropdown" uib-dropdown-menu>
+              <p ng-init="failedLogin = false" ng-if="failedLogin" class="failed-login">
+                Incorrect username or password
+              </p>
+
+              <form name="logInForm" novalidate ng-submit="logIn()">
+                <!-- Username -->
+                <div class="form-group">
+                  <label for="newUserName" class="control-label">Username</label>
+                  <input class="form-control" name="username" id="username"
+                      type="text" placeholder="Username" ng-model="$parent.username">
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                  <label for="newUserPassword" class="control-label">Password</label>
+                  <input class="form-control" id="newUserPassword" type="password"
+                      placeholder="Password" ng-model="$parent.password" name="password">
+                </div>
+
+                <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+              </form>
+
+              <button class="btn btn-success" style="width:100%;" ng-click="logIn()">Log in</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div id="main" class="body container">
+      <div ng-view></div>
+  </div>
+
+  <!-- Our WebSockets library -->
+  <script src="/static/js/sockets.js"></script>
+
+  <!-- Static dependences for offline development -->
+  <script src="/static/components/angular/angular.js"></script>
+  <script src="/static/components/angular-route/angular-route.js"></script>
+  <script src="/static/components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+
+  <!-- CDN dependencies for production -->
+  <!--
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-route.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/1.1.1/ui-bootstrap.min.js"></script>
+  -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.3/ace.js"></script>
+
+  <!-- Modules -->
+  <script src="/static/js/modules/mainModule.js"></script>
+
+  <!-- Controllers -->
+  <script src="/static/js/controllers/MainController.js"></script>
+  <script src="/static/js/controllers/EditorController.js"></script>
+
+</body>
