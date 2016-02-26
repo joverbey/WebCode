@@ -8,3 +8,4 @@ app.config.from_pyfile('config.py')
 # Initialize handler functions.
 from app import util
 from app import views
+from app.modules.template_manager import views

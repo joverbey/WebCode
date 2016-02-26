@@ -1,11 +1,30 @@
 body {
-    margin-top : 50px;
+    margin-top : 60px;
 }
 
 #editor {
-    position: absolute;
-    width: 1000px;
-    height: 50%;
+    height: 500px;
+}
+
+.row-padding {
+    padding: 5px;
+}
+
+.margin {
+    margin: 10px;
+}
+
+.hover {
+    position: relative;
+    background: #FFF;
+    top: 100px;
+    width: 25%;
+    height: 200px;
+    vertical-align: middle;
+    margin: 0 auto;
+    z-index: 1;
+    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    border: 1px solid rgba(0,0,0,.15);
 }
 
 .margin-top {

@@ -4,6 +4,9 @@ from flask import send_from_directory, jsonify
 from flask.ext.login import LoginManager, current_user
 from flask.ext.bcrypt import Bcrypt
 from app import app
+from app.database import session, Base
+from app.modules.user_manager.models import User
+from functools import wraps
 
 
 # bcrypt setup
@@ -12,6 +15,23 @@ bcrypt = Bcrypt(app)
 # login session setup
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    """Log a user into the app."""
+    return session.query(User).filter(User.username == user_id).first()
+
+
+def admin_required(function):
+    @wraps(function)
+    def wrap(*args, **kwargs):
+        if current_user.is_anonymous or current_user.admin == 0:
+            return serve_error('You need to be an admin to do that.',
+                    response_code=401)
+        else:
+            return function(*args, **kwargs)
+    return wrap
 
 
 # Functions for serving responses

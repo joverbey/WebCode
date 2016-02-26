@@ -1,4 +1,52 @@
 <div class="body">
-  <div class="body" id="editor" code="test"></div>
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="active"><a href="#/projects/1">Project 1</a></li>
+    <li><a href="#/projects/2">Project 2</a></li>
+    <li><a href="#/projects/3">Project 3</a></li>
+    <li><a href="#/projects/new">New Project</a></li>
+  </ul>
+  <div class="row row-padding">
+    <ul class="pull-right">
+      <li class="dropdown" uib-dropdown>
+        <a href="" class="dropdown-toggle"
+            ng-init="displayName = 'asdf'; loggedIn = false"
+            uib-dropdown-toggle>
+            Options<span class="caret"></span>
+        </a>
+        <!-- If the user is logged in, show their options -->
+        <ul ng-if="loggedIn" class="dropdown-menu" uib-dropdown-menu>
+          <li><a href="/#/settings">Settings</a></li>
+          <li><a ng-click="logOut()" href="">Sign out</a></li>
+        </ul>
+      </li>
+    </ul>
+    <button class="btn btn-default pull-right" ng-if="isAdmin" ng-click="showSaveTemplate(true)">
+      Save as template
+    </button>
+  </div>
+  <div class="col-md-12" id="editor">
+  </div>
+  <div ng-init="isSavingTemplate = false" ng-if="isSavingTemplate" class="hover">
+    <div style="position:absolute; padding: 10px;" class="row-padding">
+      <div class="form-group">
+        <label for="title" class="control-label">Title</label>
+        <input class="form-control" id="title" placeholder="Title" ng-model="template.title">
+      </div>
+      <div class="form-group">
+        <label for="type" class="control-label">Type</label>
+        <select id="pythonSelector" class="col-sm-2 form-control"
+            ng-init="template.type='oacc'" ng-model="template.type">
+          <option value="oacc">Open ACC</option>
+          <option value="cuda">CUDA</option>
+        </select>
+      </div>
+      <div class="row">
+        <button class="btn btn-default margin" ng-click="showSaveTemplate(false)">Cancel</button>
+        <button class="btn btn-success pull-right margin" type="submit" ng-click="saveTemplate()">
+          Save as template
+        </button>
+      </div>
+    </div>
+  </div>
   <button ng-click="printAllToConsole()">Print all</button>
 </div>

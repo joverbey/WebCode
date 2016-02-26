@@ -14,20 +14,14 @@ app.config(function($routeProvider) {
             controller: 'EditorController',
             activetab: 'home'
         })
-        .when('/home', { // route for the home page
+        .when('/settings', {
+            templateUrl: 'static/html/settings.html',
+            controller: 'SettingsController',
+            activetab: 'none'
+        })
+        .when('/projects/:project', { // route for the home page
             templateUrl: 'static/html/home.html',
             controller: 'EditorController',
             activetab: 'home'
         });
-});
-
-app.directive('code', function () {
-    return {
-        restrict: 'A',
-        link: function ($scope, element, attrs) {
-            $scope.$watch(attrs.code, function(newValue) {
-                $scope.editor.insert('test');
-            });
-        }
-    };
 });
