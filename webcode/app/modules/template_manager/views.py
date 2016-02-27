@@ -1,8 +1,21 @@
 # pylint: disable=no-name-in-module, f0401
 from flask import request
+from flask.ext.login import login_required
 from app import app
+from app.database import session
 from app.util import serve_response, serve_error, admin_required
 from app.modules.template_manager.models import Template
+
+
+@app.route('/api/templates')
+@login_required
+def get_templates():
+    templates = session.query(Template).all()
+    ret = list()
+    for template in templates:
+        ret.append(template.to_dict())
+    return serve_response(ret)
+
 
 @app.route('/api/templates', methods=['POST'])
 @admin_required

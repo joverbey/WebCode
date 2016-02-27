@@ -27,6 +27,34 @@ body {
     border: 1px solid rgba(0,0,0,.15);
 }
 
+.toolbar {
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 5px;
+    background: #f8f8f8;
+}
+
+.row {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.nav-tabs > li.active > a {
+    background: #f8f8f8;
+}
+
+.center-horizontal {
+    /*float: none;*/
+    margin-left: 0 auto;
+    margin-right: 0 auto;
+}
+
+.center-text-vertical {
+    height: 30px;
+    line-height: 40px;
+}
+
 .margin-top {
     margin-top : 25px;
 }

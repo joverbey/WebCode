@@ -1,10 +1,12 @@
-app.controller('EditorController', ['$scope', '$http', '$window',
-        '$routeParams',
-        function($scope, $http, $window, $routeParams) {
+app.controller('EditorController', ['$scope', '$http', '$window', '$interval',
+        '$routeParams', '$location',
+        function($scope, $http, $window, $interval, $routeParams, $location) {
+    var SAVING = 'Saving…';
+    var projectId;
     if ($routeParams.project) {
-        console.log($routeParams.project);
+        projectId = parseInt($routeParams.project);
     }
-    $scope.template = {};
+
     $scope.editor = ace.edit(document.getElementById('editor'));
     $scope.editor.$blockScrolling = Infinity; // hide error message
     // $scope.editor.setTheme('ace/theme/tomorrow_night');
@@ -12,12 +14,61 @@ app.controller('EditorController', ['$scope', '$http', '$window',
     $scope.editor.getSession().setValue('public class Test {\n    public ' +
             'static void main(String[] args) {\n        System.out.println' +
             '("Hello, world!");\n    }\n}\n');
-    $scope.editor.on('change', function(e) {
 
+    var saveTimer;
+    var oldValue = '';
+    $scope.status = 'Saving…';
+    $scope.template = {};
+    $scope.editor.on('change', function(e) {
+        $scope.status = 'Saving…';
+        $scope.$apply();
+        resetTimer();
     });
+
+    $scope.socket.on('close', function(event) {
+        $scope.editor.setReadOnly(true);
+        if (saveTimer) {
+            $interval.cancel(saveTimer);
+        }
+    });
+
+    $scope.$watch('selectedProject', function(newValue, oldValue) {
+        $scope.editor.setSession($scope.projects[newValue].editSession);
+        console.log(newValue);
+    });
+
+    var resetTimer = function() {
+        if (saveTimer) {
+            $interval.cancel(saveTimer);
+        }
+        var sendSave = function() {
+            var newValue = $scope.editor.getSession().getValue();
+            if (newValue !== oldValue) {
+                var curPos = $scope.editor.getCursorPosition();
+                $scope.socket.send('save', {
+                    username: $scope.username,
+                    project_id: projectId,
+                    body: $scope.editor.getSession().getValue(),
+                    cursor_x: curPos.column,
+                    cursor_y: curPos.row
+                });
+                $scope.status = 'Last edit was ' +
+                        new Date().toLocaleTimeString() + '.';
+                saveTimer = undefined;
+            }
+        };
+        saveTimer = $interval(sendSave, 3000, 1, true);
+    };
+
     $scope.showSaveTemplate = function(show) {
         $scope.isSavingTemplate = !!show;
     };
+
+
+    $scope.selectProject = function(project) {
+        $scope.selectedProject = project.project_id;
+    };
+
     $scope.saveTemplate = function() {
         var curPos = $scope.editor.getCursorPosition();
         var fd = new FormData();

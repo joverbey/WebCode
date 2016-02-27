@@ -2,10 +2,10 @@
 
 from app.database import Base, session
 
-class Template(Base):
+class Project(Base):
     """Model object for entries in the templates database table."""
 
-    __tablename__ = 'templates'
+    __tablename__ = 'projects'
 
 
     def commit_to_session(self):
@@ -18,10 +18,11 @@ class Template(Base):
 
     def to_dict(self):
         return {
-            'template_id': self.template_id,
-            'title': self.title,
             'body': self.body,
             'cursor_x': self.cursor_x,
             'cursor_y': self.cursor_y,
-            'type': self.type
+            'type': self.type,
+            'project_id': self.project_id,
+            'last_edited': self.last_edited,
+            'title': 'Project #' + str(self.project_id)
         }

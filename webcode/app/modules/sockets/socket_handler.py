@@ -69,9 +69,11 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         :param message: The message name the callback is registered under
         """
         try:
-            message = loads(message)
-            if message['eventType'] in self.callbacks:
-                self.callbacks[message['eventType']](self)
+            messageDict = loads(message)
+            if messageDict['eventType'] in self.callbacks:
+                self.callbacks[messageDict['eventType']](messageDict['data'])
+            else:
+                print('not in callbacks: ' + messageDict['eventType'])
         except:
             app.logger.error('Could not parse JSON from socket message: ' +
                              message)

@@ -9,3 +9,4 @@ app.config.from_pyfile('config.py')
 from app import util
 from app import views
 from app.modules.template_manager import views
+from app.modules.project_manager import views

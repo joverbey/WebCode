@@ -1,28 +1,40 @@
 <div class="body">
   <ul class="nav nav-tabs" role="tablist">
-    <li class="active"><a href="#/projects/1">Project 1</a></li>
-    <li><a href="#/projects/2">Project 2</a></li>
-    <li><a href="#/projects/3">Project 3</a></li>
-    <li><a href="#/projects/new">New Project</a></li>
+    <li ng-repeat="project in projects"
+        ng-class="{'active': project.project_id === selectedProject}">
+      <a href="" ng-click="selectProject(project)">
+        {{ project.title }}
+      </a>
+    </li>
+    <li role="presentation" class="dropdown" uib-dropdown>
+      <a class="dropdown-toggle" data-toggle="dropdown" href="" role="button"
+          aria-haspopup="true" aria-expanded="false" uib-dropdown-toggle>
+        New Project <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu" uib-dropdown-menu>
+        <li ng-repeat="template in templates">
+          <a href=""ng-click="createProject(template)">
+            {{ template.title }}
+          </a>
+        </li>
+        <li ng-if="isAdmin"><a>Empty Project</a></li>
+      </ul>
+    </li>
   </ul>
-  <div class="row row-padding">
-    <ul class="pull-right">
-      <li class="dropdown" uib-dropdown>
-        <a href="" class="dropdown-toggle"
-            ng-init="displayName = 'asdf'; loggedIn = false"
-            uib-dropdown-toggle>
-            Options<span class="caret"></span>
-        </a>
-        <!-- If the user is logged in, show their options -->
-        <ul ng-if="loggedIn" class="dropdown-menu" uib-dropdown-menu>
-          <li><a href="/#/settings">Settings</a></li>
-          <li><a ng-click="logOut()" href="">Sign out</a></li>
-        </ul>
-      </li>
-    </ul>
-    <button class="btn btn-default pull-right" ng-if="isAdmin" ng-click="showSaveTemplate(true)">
-      Save as template
-    </button>
+  <div class="container toolbar col-md-12">
+    <div class="row">
+      <div class="col-md-4">
+        <button class="btn btn-default pull-left">Options</button>
+      </div>
+      <div class="col-md-4 center-horizontal">
+        <p align="center" class="center-text-vertical">{{ status }}</p>
+      </div>
+      <div class="col-md-4">
+        <button class="btn btn-default pull-right" ng-if="isAdmin" ng-click="showSaveTemplate(true)">
+          Save as template
+        </button>
+      </div>
+    </div>
   </div>
   <div class="col-md-12" id="editor">
   </div>
@@ -48,5 +60,4 @@
       </div>
     </div>
   </div>
-  <button ng-click="printAllToConsole()">Print all</button>
 </div>

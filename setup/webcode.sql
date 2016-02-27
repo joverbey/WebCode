@@ -69,7 +69,7 @@ CREATE TABLE `projects` (
   `template_id` int(10) NOT NULL,
   `project_id` int(10) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`project_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) AUTO_INCREMENT=1 ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -96,7 +96,7 @@ CREATE TABLE `submissions` (
   `project_id` int(10) NOT NULL,
   `run` tinyint(1) NOT NULL,
   PRIMARY KEY (`job`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) AUTO_INCREMENT=1 ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

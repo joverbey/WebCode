@@ -13,5 +13,6 @@ session = Session(engine)
 # TODO: make ORM classes
 from app.modules.user_manager.models import User
 from app.modules.template_manager.models import Template
+from app.modules.project_manager.models import Project
 
 Base.prepare(engine, reflect=True)
