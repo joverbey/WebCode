@@ -13,11 +13,11 @@
       </a>
       <ul class="dropdown-menu" uib-dropdown-menu>
         <li ng-repeat="template in templates">
-          <a href=""ng-click="createProject(template)">
-            {{ template.title }}
-          </a>
+          <a href="" ng-click="createProject(template)">{{ template.title }}</a>
         </li>
-        <li ng-if="isAdmin"><a>Empty Project</a></li>
+        <li ng-if="isAdmin">
+          <a href="" ng-click="createEmptyProject()">Empty Project</a>
+        </li>
       </ul>
     </li>
   </ul>

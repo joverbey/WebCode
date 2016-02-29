@@ -40,7 +40,9 @@ body {
     margin-right: 0px;
 }
 
-.nav-tabs > li.active > a {
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:focus,
+.nav-tabs > li.active > a:hover  {
     background: #f8f8f8;
 }
 

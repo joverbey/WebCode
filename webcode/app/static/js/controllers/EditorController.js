@@ -2,27 +2,26 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval',
         '$routeParams', '$location',
         function($scope, $http, $window, $interval, $routeParams, $location) {
     var SAVING = 'Saving…';
-    var projectId;
-    if ($routeParams.project) {
-        projectId = parseInt($routeParams.project);
-    }
+    var saveTimer;
+    var oldValue = '';
+    $scope.saving = false;
 
     $scope.editor = ace.edit(document.getElementById('editor'));
     $scope.editor.$blockScrolling = Infinity; // hide error message
-    // $scope.editor.setTheme('ace/theme/tomorrow_night');
-    $scope.editor.getSession().setMode('ace/mode/java');
-    $scope.editor.getSession().setValue('public class Test {\n    public ' +
-            'static void main(String[] args) {\n        System.out.println' +
-            '("Hello, world!");\n    }\n}\n');
-
-    var saveTimer;
-    var oldValue = '';
     $scope.status = 'Saving…';
     $scope.template = {};
+
     $scope.editor.on('change', function(e) {
+        $scope.saving = true;
         $scope.status = 'Saving…';
         $scope.$apply();
         resetTimer();
+    });
+    $scope.editor.on('changeSession', function(object) {
+        var old = object.oldSession;
+        if (old.getValue() !== oldValue) {
+            sendSave(old.projectId);
+        }
     });
 
     $scope.socket.on('close', function(event) {
@@ -33,37 +32,61 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval',
     });
 
     $scope.$watch('selectedProject', function(newValue, oldValue) {
-        $scope.editor.setSession($scope.projects[newValue].editSession);
-        console.log(newValue);
+        if (newValue in $scope.projects) {
+            $scope.editor.setSession($scope.projects[newValue].editSession);
+            setStatus();
+        }
     });
 
+    var sendSave = function(projectId) {
+        if (projectId === undefined) {
+            projectId = $scope.selectedProject;
+        }
+        var project = $scope.projects[projectId];
+        var newValue= project.editSession.getValue();
+        if (newValue !== project.body) {
+            var curPos = $scope.editor.getCursorPosition();
+            project.body = newValue;
+            project.last_edited = Date.now() / 1000;
+            $scope.socket.send('save', {
+                username: $scope.username,
+                project_id: projectId,
+                body: newValue,
+                cursor_x: curPos.column,
+                cursor_y: curPos.row
+            });
+            saveTimer = undefined;
+        }
+        setStatus();
+    };
+
+    var setStatus = function() {
+        var project = $scope.projects[$scope.selectedProject];
+        var date = new Date(project.last_edited * 1000);
+        var now = new Date();
+        var status = 'Last edit was ';
+        if (now.day !== date.day || now.month !== date.month ||
+                now.year !== date.year) {
+            status = status + 'on ' + date.toLocaleDateString() + ' ';
+        }
+        status = status + 'at ' + date.toLocaleTimeString() + '.';
+        $scope.status = status;
+    };
+
     var resetTimer = function() {
+        cancelTimer();
+        saveTimer = $interval(sendSave, 3000, 1, true, $scope.selectedProject);
+    };
+
+    var cancelTimer = function() {
         if (saveTimer) {
             $interval.cancel(saveTimer);
         }
-        var sendSave = function() {
-            var newValue = $scope.editor.getSession().getValue();
-            if (newValue !== oldValue) {
-                var curPos = $scope.editor.getCursorPosition();
-                $scope.socket.send('save', {
-                    username: $scope.username,
-                    project_id: projectId,
-                    body: $scope.editor.getSession().getValue(),
-                    cursor_x: curPos.column,
-                    cursor_y: curPos.row
-                });
-                $scope.status = 'Last edit was ' +
-                        new Date().toLocaleTimeString() + '.';
-                saveTimer = undefined;
-            }
-        };
-        saveTimer = $interval(sendSave, 3000, 1, true);
     };
 
     $scope.showSaveTemplate = function(show) {
         $scope.isSavingTemplate = !!show;
     };
-
 
     $scope.selectProject = function(project) {
         $scope.selectedProject = project.project_id;

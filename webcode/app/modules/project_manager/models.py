@@ -22,7 +22,7 @@ class Project(Base):
             'cursor_x': self.cursor_x,
             'cursor_y': self.cursor_y,
             'type': self.type,
-            'project_id': self.project_id,
+            'project_id': repr(self.project_id),
             'last_edited': self.last_edited,
             'title': 'Project #' + str(self.project_id)
         }

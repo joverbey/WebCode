@@ -6,7 +6,6 @@ app.controller('MainController', ['$scope', '$http', '$route', '$window',
     $scope.isOpen = false;
     $scope.templates = [];
     $scope.projects = [];
-    $scope.selectedProject = 1;
 
     var closeDropdown = function() {
         $scope.isOpen = false;
@@ -26,11 +25,13 @@ app.controller('MainController', ['$scope', '$http', '$route', '$window',
     var getProjects = function() {
         $http.get('/api/projects')
                 .then(function(response) {
-                    $scope.projects = response.data.data;
-                    $scope.selectedProject = $scope.projects[1].project_id;
+                    $scope.projects = response.data.data.projects;
+                    $scope.selectedProject = response.data.data.selected;
                     for (var project in $scope.projects) {
-                        $scope.projects[project].editSession =
-                                ace.createEditSession($scope.projects[project].body, "ace/mode/java");
+                        var session = ace.createEditSession(
+                                $scope.projects[project].body, "ace/mode/java");
+                        $scope.projects[project].editSession = session;
+                        session.projectId = project;
                     }
                 },
                 function(error) {
@@ -74,12 +75,25 @@ app.controller('MainController', ['$scope', '$http', '$route', '$window',
             transformRequest: angular.identity,
             data: fd
         }).then(function(response) {
-            console.log(response.data.data);
+            $scope.projects.append(response.data.data);
         }, function(error) {
             console.log('Error updating problem');
             console.log(response);
             console.log(error.data.status + ': ' + error.data.error);
         });
+    };
+
+    $scope.createEmptyProject = function() {
+        $scope.projects.blank = {
+            body: '',
+            cursor_x: 0,
+            cursor_y: 0,
+            type: '',
+            project_id: 'blank',
+            last_edited: Date.now() / 1000,
+            title: 'Blank Project',
+            editSession: ace.createEditSession('', "ace/mode/c_cpp")
+        };
     };
 
     $scope.logIn = function() {

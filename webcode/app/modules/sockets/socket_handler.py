@@ -1,4 +1,5 @@
 from app import app
+from flask.sessions import SecureCookieSessionInterface
 import tornado.websocket
 from json import loads
 
@@ -15,6 +16,10 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
 
     # Callback dictionary for receiving messages
     callbacks = dict()
+
+    def __init__(self, *args, **kwargs):
+        tornado.websocket.WebSocketHandler.__init__(self, *args, **kwargs)
+        self.username = None
 
     @classmethod
     def emit(cls, event_type, data):
@@ -56,6 +61,15 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         """Add a client to the connection pool"""
         SocketHandler.clients.append(self)
+        try:
+            cookie = self.request.cookies['session'].value
+            session = SecureCookieSessionInterface().open_session(
+                    app,
+                    FakeRequest(cookie)
+            )
+            self.username = session['user_id']
+        except:
+            pass
 
     def on_close(self):
         """Remove a client from the connection pool"""
@@ -70,6 +84,7 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         """
         try:
             messageDict = loads(message)
+            messageDict['data']['username'] = self.username
             if messageDict['eventType'] in self.callbacks:
                 self.callbacks[messageDict['eventType']](messageDict['data'])
             else:
@@ -87,4 +102,12 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         return {
             'eventType': event,
             'data': data
+        }
+
+
+class FakeRequest:
+
+    def __init__(self, cookie):
+        self.cookies = {
+            app.session_cookie_name: cookie
         }

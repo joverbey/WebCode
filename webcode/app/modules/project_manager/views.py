@@ -5,6 +5,7 @@ from app import app
 from app.database import session
 from app.util import serve_response
 from app.modules.project_manager.models import Project
+from app.modules.sockets.socket_handler import SocketHandler
 from app.modules.template_manager.models import Template
 import time
 
@@ -14,8 +15,11 @@ def get_projects():
     projects = session.query(Project).all()
     ret = dict()
     for project in projects:
-        ret[project.project_id] = project.to_dict()
-    return serve_response(ret)
+        ret[repr(project.project_id)] = project.to_dict()
+    return serve_response({
+        'selected': repr(projects[0].project_id),
+        'projects': ret
+    })
 
 
 @app.route('/api/projects', methods=['POST'])
@@ -38,3 +42,15 @@ def create_project():
         return serve_error('Form field not found: ' + error[0])
     project.commit_to_session()
     return serve_response(project.to_dict())
+
+@SocketHandler.on('save')
+def on_save(data):
+    """Save the project"""
+    project = (session.query(Project)
+               .filter(Project.project_id == data['project_id']
+                       and Project.username == data['username']).first())
+    project.body = data['body']
+    project.cursor_x = data['cursor_x']
+    project.cursor_y = data['cursor_y']
+    project.last_edited = int(time.time())
+    project.commit_to_session()
