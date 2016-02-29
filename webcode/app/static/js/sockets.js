@@ -1,5 +1,4 @@
 function Socket(url) {
-    this.ws = new WebSocket(url);
     this.events = {};
     var parent = this;
 
@@ -13,13 +12,6 @@ function Socket(url) {
             parent.events[data.eventType](data.data);
         }
     };
-    this.ws.onmessage = eventHandler;
-
-    this.ws.onclose = function(event) {
-        if ('close' in parent.events) {
-            parent.events.close({});
-        }
-    };
 
     this.send = function(type, event) {
         if (parent.ws.readyState == 1) {
@@ -27,4 +19,23 @@ function Socket(url) {
             parent.ws.send(string);
         }
     };
+
+    this.refresh = function() {
+        parent.ws = new WebSocket(url);
+
+        parent.ws.onmessage = eventHandler;
+
+        parent.ws.onclose = function(event) {
+            if ('close' in parent.events) {
+                parent.events.close({});
+            }
+        };
+
+        parent.ws.onopen = function(event) {
+            if ('open' in parent.events) {
+                parent.events.open({});
+            }
+        };
+    };
+    this.refresh();
 }

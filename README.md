@@ -6,7 +6,7 @@
 - [x] Edit code - cf. http://ace.ajax.org
   - [ ] Log if the user is active (editing/scrolling/etc.) or inactive once every 30 seconds/minute (with timestamp)
   - [x] Automatically save the user's code to the server once every 30 seconds/minute
-  - [ ] Warn (lock editor?) if the connection is lost
+  - [x] Warn (lock editor?) if the connection is lost
 - [ ] Compile code, displaying warnings/errors
   - [ ] Log that the user compiled the code together with a timestamp and whether errors/warnings produced
   - [ ] Save the code so we can view that version

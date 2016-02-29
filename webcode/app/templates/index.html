@@ -104,5 +104,26 @@
   <!-- Controllers -->
   <script src="/static/js/controllers/MainController.js"></script>
   <script src="/static/js/controllers/EditorController.js"></script>
+  <script src="/static/js/controllers/DisconnectModalController.js"></script>
 
+  <!--
+  Since the internet connection is likely lost, the client won't be able
+  to get the static html page if it's not already loaded, so it needs
+  to be pre-loaded
+  -->
+  <script type="text/ng-template" id="disconnectModal.html">
+    <div class="modal-header">
+      <h3 class="modal-title">Disconnected from server</h3>
+    </div>
+    <div class="modal-body">
+      You're disconnected from the server, so any work you do won't be able to be
+      saved. Check your network connection to ensure you are connected to the
+      internet then click "Attempt to reconnect."
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-info" type="button" ng-click="reconnectToSocket()">
+        Attempt to reconnect
+      </button>
+    </div>
+  </script>
 </body>

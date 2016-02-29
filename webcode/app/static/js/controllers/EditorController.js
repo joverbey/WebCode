@@ -1,9 +1,10 @@
 app.controller('EditorController', ['$scope', '$http', '$window', '$interval',
-        '$routeParams', '$location',
-        function($scope, $http, $window, $interval, $routeParams, $location) {
+        '$routeParams', '$location', '$uibModal',
+        function($scope, $http, $window, $interval, $routeParams, $location, $uibModal) {
     var SAVING = 'Saving…';
     var saveTimer;
     var oldValue = '';
+    var modalInstance;
     $scope.saving = false;
 
     $scope.editor = ace.edit(document.getElementById('editor'));
@@ -29,6 +30,22 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval',
         if (saveTimer) {
             $interval.cancel(saveTimer);
         }
+        if (modalInstance === undefined) {
+            modalInstance = $uibModal.open({
+                templateUrl: 'disconnectModal.html',
+                controller: 'DisconnectModalController',
+                size: 'sm',
+                scope: $scope,
+                backdrop: 'static',
+                keyboard: false
+            });
+        }
+    });
+
+    $scope.socket.on('open', function(event) {
+        $scope.editor.setReadOnly(false);
+        modalInstance.dismiss('open');
+        modalInstance = undefined;
     });
 
     $scope.$watch('selectedProject', function(newValue, oldValue) {
@@ -65,8 +82,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval',
         var date = new Date(project.last_edited * 1000);
         var now = new Date();
         var status = 'Last edit was ';
-        if (now.day !== date.day || now.month !== date.month ||
-                now.year !== date.year) {
+        if (date.toDateString() !== now.toDateString()) {
             status = status + 'on ' + date.toLocaleDateString() + ' ';
         }
         status = status + 'at ' + date.toLocaleTimeString() + '.';

@@ -7,6 +7,10 @@ app.controller('MainController', ['$scope', '$http', '$route', '$window',
     $scope.templates = [];
     $scope.projects = [];
 
+    $scope.reconnectToSocket = function() {
+        $scope.socket.refresh();
+    };
+
     var closeDropdown = function() {
         $scope.isOpen = false;
     };
