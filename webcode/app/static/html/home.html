@@ -6,12 +6,12 @@
         {{ project.title }}
       </a>
     </li>
-    <li role="presentation" class="dropdown" uib-dropdown>
-      <a class="dropdown-toggle" data-toggle="dropdown" href="" role="button"
-          aria-haspopup="true" aria-expanded="false" uib-dropdown-toggle>
+    <li role="presentation" uib-dropdown>
+      <a data-toggle="dropdown" href="" role="button" aria-haspopup="true"
+          aria-expanded="false" uib-dropdown-toggle>
         New Project <span class="caret"></span>
       </a>
-      <ul class="dropdown-menu" uib-dropdown-menu>
+      <ul uib-dropdown-menu>
         <li ng-repeat="template in templates">
           <a href="" ng-click="createProject(template)">{{ template.title }}</a>
         </li>
@@ -30,13 +30,30 @@
         <p align="center" class="center-text-vertical">{{ status }}</p>
       </div>
       <div class="col-md-4">
-        <button class="btn btn-default pull-right" ng-if="isAdmin" ng-click="showSaveTemplate(true)">
-          Save as template
-        </button>
+        <div class="row">
+          <div class="btn-group pull-right" uib-dropdown>
+            <button type="button" class="btn btn-success" ng-click="compileAndRun()">
+              Run <span class="glyphicon glyphicon-play"></span>
+            </button>
+            <button type="button" class="btn btn-success" uib-dropdown-toggle>
+              <span class="caret"></span>
+            </button>
+            <ul uib-dropdown-menu>
+              <li><a href="" ng-click="compileOnly()">Compile only</a></li>
+            </ul>
+          </div>
+          <button class="btn btn-default pull-right" ng-if="isAdmin"
+              ng-click="showSaveTemplate(true)">
+            Save as template
+          </button>
+        </div>
       </div>
     </div>
   </div>
   <div class="col-md-12" id="editor">
+  </div>
+  <div class="col-md-12" style="height: 200px;">
+    {{ consoleOutput }}
   </div>
   <div ng-init="isSavingTemplate = false" ng-if="isSavingTemplate" class="hover">
     <div style="position:absolute; padding: 10px;" class="row-padding">

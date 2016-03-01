@@ -11,6 +11,8 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval',
     $scope.editor.$blockScrolling = Infinity; // hide error message
     $scope.status = 'Saving…';
     $scope.template = {};
+    $scope.jobs = [];
+    $scope.consoleOutput = '';
 
     $scope.editor.on('change', function(e) {
         $scope.saving = true;
@@ -127,12 +129,34 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval',
             // NOTE: Global problem list in client may be invalid now
             $scope.showSaveTemplate(false);
         }, function(error) {
-            console.log('Error updating problem');
-            console.log(response);
-            console.log(error.data.status + ': ' + error.data.error);
+            console.error(error.data.status + ': ' + error.data.error);
         });
     };
-    $scope.printAllToConsole = function() {
-        console.log($scope.editor.getSession().getValue());
+
+    $scope.compileAndRun = function() {
+        if ($scope.isSavingTemplate) {
+            // uhh... solve this
+        }
+        var fd = new FormData();
+        fd.append('run', true);
+        fd.append('project_id', $scope.selectedProject);
+        $http({
+            method: 'POST',
+            url: 'api/submissions',
+            headers: {'Content-type': undefined},
+            transformRequest: angular.identity,
+            data: fd
+        }).then(function(response) {
+            $scope.jobs.push(response.data.data.job);
+        }, function(error) {
+            console.error(error.data.status + ': ' + error.data.error);
+        });
     };
+
+    $scope.socket.on('submit', function(data) {
+        if ($scope.jobs.indexOf(data.job) > -1) {
+            $scope.consoleOutput = $scope.consoleOutput + data.stdout;
+            $scope.$apply();
+        }
+    });
 }]);

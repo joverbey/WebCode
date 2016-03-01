@@ -14,5 +14,6 @@ session = Session(engine)
 from app.modules.user_manager.models import User
 from app.modules.template_manager.models import Template
 from app.modules.project_manager.models import Project
+from app.modules.submission_manager.models import Submission
 
 Base.prepare(engine, reflect=True)
