@@ -9,12 +9,12 @@
   - [x] Warn (lock editor?) if the connection is lost
 - [ ] Compile code, displaying warnings/errors
   - [ ] Log that the user compiled the code together with a timestamp and whether errors/warnings produced
-  - [ ] Save the code so we can view that version
+  - [x] Save the code so we can view that version
 - [ ] Run and display the program's output
   - [ ] Log that the user ran the code together with a timestamp, the exit code, and what output was produced
 
 ## High Priority
-- [ ] Put compilations and runs in a queue since we only have one PGCC license and one GPU, and we don't want jobs affecting each other's runtimes
+- [x] Put compilations and runs in a queue since we only have one PGCC license and one GPU, and we don't want jobs affecting each other's runtimes
 - [ ] Allow the user to view (or revert to?) a previous version of the code
 - [ ] We might have the user's code output a SVG image (we can use a fixed filename, like output.svg) -- if the code outputs this file, display the image along with the output
 - [ ] For OpenACC projects, provide an option to compile and run /without/ OpenACC enabled (i.e., without -ta=nvidia)
