@@ -1,4 +1,4 @@
-body {
+.body {
     margin-top : 60px;
 }
 
@@ -89,4 +89,16 @@ body {
     font-size: 14px;
     font-weight: 700;
     color: #d9534f;
+}
+
+.console-body {
+    padding: 15px;
+}
+
+.console {
+    color: #fff;
+    background-color: #111;
+    font-family: 'Source Code Pro', monospace;
+    resize: none;
+    margin: 0px;
 }

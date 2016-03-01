@@ -58,9 +58,7 @@ class RunnerQueueThread(threading.Thread):
                 time.sleep(.1)
             else:
                 runner = self.runners.pop(0)
-                print('starting execution')
                 runner.run()
-                print('finished execution')
 
     def add(self, runner):
         self.runners.append(runner)
@@ -96,23 +94,22 @@ class Runner:
 
         :return: one of the status constants representing the success
         """
-        status = self._compile_submission()
-        self._update_status(status, COMPILE_PART)
+        status, result_code = self._compile_submission()
+        self._update_status(status, COMPILE_PART, result_code)
 
         if status == COMPILATION_SUCCESS and self.submission.run == 1:
             status, max_time = self._execute_submission()
-            self._update_status(status, EXECUTE_PART)
+            self._update_status(status, EXECUTE_PART, result_code)
         else:
             max_time = -1
 
         return status, max_time
 
-    def _update_status(self, status, part):
+    def _update_status(self, status, part, exit_code):
         """Updates the status of the submission and notifies the clients that
         the submission has a new status.
         """
-        # self.submission.update_status(DB_STATUS[status])
-
+        self.submission.update_status(exit_code, DB_STATUS[status])
         try:
             directory = self.submission_path
             stdout = open(os.path.join(directory, part + OUT_FILE_NAME)).read()
@@ -121,13 +118,19 @@ class Runner:
             SocketHandler.emit('submit', {
                 'job': self.submission.job,
                 'part': part,
-                'stderr': stderr,
-                'stdout': stdout
+                'stderr': self._sanitize_output(stderr),
+                'stdout': self._sanitize_output(stdout)
             })
         except:
             SocketHandler.emit('submit', {
                 'error': 'something went horribly wrong'
             })
+
+    def _sanitize_output(self, output):
+        """Remove any instances of the actual run location from the output"""
+        directory = os.path.join(app.config['DATA_FOLDER'], 'submits',
+                str(self.submission.job))
+        return output.replace(directory + '/', '')
 
     def _compile_submission(self):
         """Compile the submission if it needs compilation. A programming
@@ -144,9 +147,9 @@ class Runner:
         )
 
         if result == 0:
-            return COMPILATION_SUCCESS
+            return COMPILATION_SUCCESS, result
         else:
-            return COMPILATION_ERROR
+            return COMPILATION_ERROR, result
 
     def _execute_submission(self):
         """Run the submission.

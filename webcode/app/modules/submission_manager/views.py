@@ -35,7 +35,7 @@ def create_submission():
             submit_time=int(time.time()),
             type=project.type,
             project_id=int(request.form['project_id']),
-            run=1 if bool(request.form['run']) else 0
+            run=int(request.form['run'])
         )
     except KeyError:
         return serve_error('Form data missing.')
@@ -51,8 +51,6 @@ def create_submission():
 
     runner = Runner(submission, file_name)
     runner.run_queued()
-
-    print('serving response')
 
     return serve_response({
         'job': submission.job

@@ -1,4 +1,4 @@
-<div class="body">
+<div>
   <ul class="nav nav-tabs" role="tablist">
     <li ng-repeat="project in projects"
         ng-class="{'active': project.project_id === selectedProject}">
@@ -50,10 +50,11 @@
       </div>
     </div>
   </div>
-  <div class="col-md-12" id="editor">
+  <div class="editor-container">
+    <div class="col-md-12" id="editor"></div>
+    <div class="console-body" style="height: 200px;">
+    <textarea class="col-md-12 console" rows="10" cols="20" wrap="hard" readonly>{{ consoleOutput }}</textarea>
   </div>
-  <div class="col-md-12" style="height: 200px;">
-    {{ consoleOutput }}
   </div>
   <div ng-init="isSavingTemplate = false" ng-if="isSavingTemplate" class="hover">
     <div style="position:absolute; padding: 10px;" class="row-padding">

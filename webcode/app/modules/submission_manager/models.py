@@ -7,6 +7,11 @@ class Submission(Base):
 
     __tablename__ = 'submissions'
 
+    def update_status(self, exit_code, result):
+        self.exit_code = exit_code
+        self.result = result
+        self.commit_to_session()
+
     def commit_to_session(self):
         """Commit this problem to the database as a new submission."""
         session.add(self)

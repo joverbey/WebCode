@@ -138,7 +138,27 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval',
             // uhh... solve this
         }
         var fd = new FormData();
-        fd.append('run', true);
+        fd.append('run', 1);
+        fd.append('project_id', $scope.selectedProject);
+        $http({
+            method: 'POST',
+            url: 'api/submissions',
+            headers: {'Content-type': undefined},
+            transformRequest: angular.identity,
+            data: fd
+        }).then(function(response) {
+            $scope.jobs.push(response.data.data.job);
+        }, function(error) {
+            console.error(error.data.status + ': ' + error.data.error);
+        });
+    };
+
+    $scope.compileOnly = function() {
+        if ($scope.isSavingTemplate) {
+            // uhh... solve this
+        }
+        var fd = new FormData();
+        fd.append('run', 0);
         fd.append('project_id', $scope.selectedProject);
         $http({
             method: 'POST',
@@ -155,7 +175,8 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval',
 
     $scope.socket.on('submit', function(data) {
         if ($scope.jobs.indexOf(data.job) > -1) {
-            $scope.consoleOutput = $scope.consoleOutput + data.stdout;
+            $scope.consoleOutput = $scope.consoleOutput + data.stdout +
+                    data.stderr;
             $scope.$apply();
         }
     });
