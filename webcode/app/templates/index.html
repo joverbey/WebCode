@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body ng-controller="MainController">
-  <div class="navbar navbar-default navbar-fixed-top">
+  <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle"  ng-init="navCollapsed = true" ng-click="navCollapsed = !navCollapsed">
@@ -28,7 +28,7 @@
       </div>
       <div class="collapse navbar-collapse" ng-class="!navCollapsed && 'in'">
         <ul class="nav navbar-nav navbar-left">
-          <li ng-class="{active: $route.current.activetab == 'home'}"><a href="/#/">Home</a></li>
+          <li ng-class="{'active': $route.current.activetab == 'home'}"><a href="/#/">Home</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right ng-cloak">
 
@@ -55,7 +55,7 @@
               <form name="logInForm" novalidate ng-submit="logIn()">
                 <!-- Username -->
                 <div class="form-group">
-                  <label for="newUserName" class="control-label">Username</label>
+                  <label for="username" class="control-label">Username</label>
                   <input class="form-control" name="username" id="username"
                       type="text" placeholder="Username" ng-model="$parent.username">
                 </div>
@@ -78,7 +78,7 @@
     </div>
   </div>
 
-  <div id="main" class="body container">
+  <div id="main" class="body">
       <div ng-view></div>
   </div>
 
@@ -89,6 +89,8 @@
   <script src="/static/components/angular/angular.js"></script>
   <script src="/static/components/angular-route/angular-route.js"></script>
   <script src="/static/components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+  <script src="/static/components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+  <script src="/static/components/angular-resizable/angular-resizable.min.js"></script>
 
   <!-- CDN dependencies for production -->
   <!--

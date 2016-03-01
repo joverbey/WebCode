@@ -51,9 +51,9 @@
     </div>
   </div>
   <div class="editor-container">
-    <div class="col-md-12" id="editor"></div>
+    <div class="col-md-12" resizable r-directions="['bottom']" r-flex="true" id="editor"></div>
     <div class="console-body" style="height: 200px;">
-    <textarea class="col-md-12 console" rows="10" cols="20" wrap="hard" readonly>{{ consoleOutput }}</textarea>
+    <textarea class="col-md-12 console no-select" rows="10" cols="20" wrap="hard" readonly>{{ consoleOutput }}</textarea>
   </div>
   </div>
   <div ng-init="isSavingTemplate = false" ng-if="isSavingTemplate" class="hover">
@@ -63,8 +63,8 @@
         <input class="form-control" id="title" placeholder="Title" ng-model="template.title">
       </div>
       <div class="form-group">
-        <label for="type" class="control-label">Type</label>
-        <select id="pythonSelector" class="col-sm-2 form-control"
+        <label for="typeSelector" class="control-label">Type</label>
+        <select id="typeSelector" class="col-sm-2 form-control"
             ng-init="template.type='oacc'" ng-model="template.type">
           <option value="oacc">Open ACC</option>
           <option value="cuda">CUDA</option>

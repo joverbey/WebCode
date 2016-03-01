@@ -1,13 +1,13 @@
 app.controller('EditorController', ['$scope', '$http', '$window', '$interval',
         '$routeParams', '$location', '$uibModal',
         function($scope, $http, $window, $interval, $routeParams, $location, $uibModal) {
-    var SAVING = 'Saving…';
     var saveTimer;
     var oldValue = '';
     var modalInstance;
     $scope.saving = false;
 
     $scope.editor = ace.edit(document.getElementById('editor'));
+    $scope.editor.setTheme("ace/theme/twilight");
     $scope.editor.$blockScrolling = Infinity; // hide error message
     $scope.status = 'Saving…';
     $scope.template = {};
@@ -16,7 +16,6 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval',
 
     $scope.editor.on('change', function(e) {
         $scope.saving = true;
-        $scope.status = 'Saving…';
         $scope.$apply();
         resetTimer();
     });

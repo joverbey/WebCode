@@ -1,9 +1,22 @@
-.body {
+body {
     margin-top : 60px;
+    background: #383838;
+}
+
+.editor-container {
+    display: flex;
 }
 
 #editor {
-    height: 500px;
+    position: fixed;
+    top: 60px;
+    bottom: 136px; /* 130 + 6 */
+    left: 206px;
+    right: 0;
+    overflow: hidden;
+    flex: 4;
+    flex-flow: column;
+    /*height: 500px;*/
 }
 
 .row-padding {
@@ -36,8 +49,8 @@
 }
 
 .row {
-    margin-left: 0px;
-    margin-right: 0px;
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .nav-tabs > li.active > a,
@@ -69,13 +82,6 @@
     color: #767676;
 }
 
-.underlineHeader {
-    padding-bottom: 0.3em;
-    font-size: 1.75em;
-    line-height: 1.225;
-    border-bottom: 1px solid #eee;
-}
-
 .login-dropdown {
     padding: 10px;
     width: 280px;
@@ -96,9 +102,16 @@
 }
 
 .console {
+    position: fixed;
+    bottom: 0;
+    left: 206px;
+    right: 0;
+    height: 130px;
+    overflow: auto;
     color: #fff;
     background-color: #111;
     font-family: 'Source Code Pro', monospace;
     resize: none;
-    margin: 0px;
+    border-width: 0;
+    flex: 1;
 }
