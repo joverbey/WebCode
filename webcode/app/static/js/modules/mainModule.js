@@ -11,7 +11,7 @@ var app = angular.module('mainModule',[
 app.config(function($routeProvider) {
     $routeProvider
         .when('/', { // route for the home page
-            templateUrl: 'static/html/home.html',
+            templateUrl: 'static/html/home2.html',
             controller: 'EditorController',
             activetab: 'home'
         })

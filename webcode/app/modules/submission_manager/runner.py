@@ -160,7 +160,6 @@ class Runner:
             3. checks the performance of the submission for errors
             4. compares the output against correct test output
         """
-        max_time = 0
         # Iterate over all the input files.
 
         start_time = time.time()
@@ -175,15 +174,15 @@ class Runner:
             return TIMELIMIT_EXCEEDED, TIME_LIMIT
 
         end_time = time.time()
-        max_time = end_time - start_time
+        total_time = end_time - start_time
 
         if process.poll() != 0:
             # If the process's exit code was nonzero, then it had a
             # runtime error.
-            return RUNTIME_ERROR, max_time
+            return RUNTIME_ERROR, total_time
 
         # The answer is correct if all the tests complete without any failure.
-        return NO_ERRORS, max_time
+        return NO_ERRORS, total_time
 
     def _create_process(self):
         """Run the program as a subprocess.

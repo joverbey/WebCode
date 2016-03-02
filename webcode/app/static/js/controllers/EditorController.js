@@ -1,6 +1,4 @@
-app.controller('EditorController', ['$scope', '$http', '$window', '$interval',
-        '$routeParams', '$location', '$uibModal',
-        function($scope, $http, $window, $interval, $routeParams, $location, $uibModal) {
+app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '$routeParams', '$location', '$uibModal', function($scope, $http, $window, $interval, $routeParams, $location, $uibModal) {
     var saveTimer;
     var oldValue = '';
     var modalInstance;
@@ -8,11 +6,21 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval',
 
     $scope.editor = ace.edit(document.getElementById('editor'));
     $scope.editor.setTheme("ace/theme/twilight");
+    //$scope.editor.setOptions({
+    //    maxLines: Infinity
+    //});
+
     $scope.editor.$blockScrolling = Infinity; // hide error message
     $scope.status = 'Saving…';
     $scope.template = {};
     $scope.jobs = [];
     $scope.consoleOutput = '';
+
+    $scope.$on("angular-resizable.resizing", function (event, args) {
+        if (args.height) {
+            $scope.editor.renderer.onResize(true);
+        }
+    });
 
     $scope.editor.on('change', function(e) {
         $scope.saving = true;
