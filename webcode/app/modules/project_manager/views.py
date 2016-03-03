@@ -27,8 +27,8 @@ def get_projects():
 def create_project():
     try:
         template = (session.query(Template)
-                .filter(Template.template_id ==
-                        int(request.form['template_id']))).first()
+                    .filter(Template.template_id ==
+                            int(request.form['template_id']))).first()
         project = Project(
             username=current_user.username,
             body=template.body,

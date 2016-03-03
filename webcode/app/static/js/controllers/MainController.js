@@ -1,14 +1,18 @@
-app.controller('MainController', ['$scope', '$http', '$route', '$window',
-        function($scope, $http, $route, $window) {
+app.controller('MainController', ['$scope', '$http', '$route', '$window', function($scope, $http, $route, $window) {
     $scope.socket = new Socket('ws://' + $window.location.host + '/websocket');
     $scope.isAdmin = false;
     $scope.$route = $route;
     $scope.isOpen = false;
     $scope.templates = [];
     $scope.projects = [];
+    $scope.showTree = true;
 
     $scope.reconnectToSocket = function() {
         $scope.socket.refresh();
+    };
+
+    $scope.toggleFileTree = function() {
+        $scope.showTree = !$scope.showTree;
     };
 
     var closeDropdown = function() {
@@ -23,7 +27,6 @@ app.controller('MainController', ['$scope', '$http', '$route', '$window',
                 function(error) {
                     console.log(error);
                 });
-
     };
 
     var getProjects = function() {

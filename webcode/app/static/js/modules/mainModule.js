@@ -11,7 +11,7 @@ var app = angular.module('mainModule',[
 app.config(function($routeProvider) {
     $routeProvider
         .when('/', { // route for the home page
-            templateUrl: 'static/html/home2.html',
+            templateUrl: 'static/html/home.html',
             controller: 'EditorController',
             activetab: 'home'
         })
@@ -25,4 +25,16 @@ app.config(function($routeProvider) {
             controller: 'EditorController',
             activetab: 'home'
         });
+});
+
+app.directive('rowToolbar', function() {
+    return {
+        templateUrl: '/static/html/row-toolbar.html'
+    };
+});
+
+app.directive('columnToolbar', function() {
+    return {
+        templateUrl: '/static/html/column-toolbar.html'
+    };
 });

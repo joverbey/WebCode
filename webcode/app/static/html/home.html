@@ -1,81 +1,45 @@
-<div>
-  <ul class="nav nav-tabs" role="tablist">
-    <li ng-repeat="project in projects"
-        ng-class="{'active': project.project_id === selectedProject}">
-      <a href="" ng-click="selectProject(project)">
-        {{ project.title }}
-      </a>
-    </li>
-    <li role="presentation" uib-dropdown>
-      <a data-toggle="dropdown" href="" role="button" aria-haspopup="true"
-          aria-expanded="false" uib-dropdown-toggle>
-        New Project <span class="caret"></span>
-      </a>
-      <ul uib-dropdown-menu>
-        <li ng-repeat="template in templates">
-          <a href="" ng-click="createProject(template)">{{ template.title }}</a>
-        </li>
-        <li ng-if="isAdmin">
-          <a href="" ng-click="createEmptyProject()">Empty Project</a>
-        </li>
-      </ul>
-    </li>
-  </ul>
-  <div class="container toolbar col-md-12">
-    <div class="row">
-      <div class="col-md-4">
-        <button class="btn btn-default pull-left">Options</button>
-      </div>
-      <div class="col-md-4 center-horizontal">
-        <p align="center" class="center-text-vertical">{{ status }}</p>
-      </div>
-      <div class="col-md-4">
-        <div class="row">
-          <div class="btn-group pull-right" uib-dropdown>
-            <button type="button" class="btn btn-success" ng-click="compileAndRun()">
-              Run <span class="glyphicon glyphicon-play"></span>
-            </button>
-            <button type="button" class="btn btn-success" uib-dropdown-toggle>
-              <span class="caret"></span>
-            </button>
-            <ul uib-dropdown-menu>
-              <li><a href="" ng-click="compileOnly()">Compile only</a></li>
-            </ul>
+<div class="horizontal">
+  <div ng-show="showTree" class="left" resizable r-directions="['right']" r-flex="true" r-grabber="<div id='resize-bar-column'></div>">
+    <div class="resizer">
+      <div class="scroller">
+        <div class="tree-view" style="color: #FFFFFF;">
+          <div class="folder-header" ng-init="showProjects = true"
+               ng-click="toggleShowProjects()">
+            <span class="glyphicon " ng-class="showProjects ? 'glyphicon-menu-down' : 'glyphicon-menu-right'">
+            </span>
+            Projects
           </div>
-          <button class="btn btn-default pull-right" ng-if="isAdmin"
-              ng-click="showSaveTemplate(true)">
-            Save as template
-          </button>
+          <ul class="project-list" ng-show="showProjects">
+            <li class="project-list-item" ng-repeat="project in projects" ng-class="{'selected-project': selectedProject}">
+              {{ project.title }}
+            </li>
+          </ul>
+          <div class="folder-header" ng-init="showTemplates = true"
+               ng-click="toggleShowTemplates()">
+            <span class="glyphicon " ng-class="showTemplates ? 'glyphicon-menu-down' : 'glyphicon-menu-right'">
+            </span>
+            Templates
+          </div>
+          <ul class="project-list" ng-show="showTemplates">
+            <li class="project-list-item" ng-repeat="template in templates">{{ template.title }}</li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
-  <div class="editor-container">
-    <div class="col-md-12" resizable r-directions="['bottom']" r-flex="true" id="editor"></div>
-    <div class="console-body" style="height: 200px;">
-    <textarea class="col-md-12 console no-select" rows="10" cols="20" wrap="hard" readonly>{{ consoleOutput }}</textarea>
-  </div>
-  </div>
-  <div ng-init="isSavingTemplate = false" ng-if="isSavingTemplate" class="hover">
-    <div style="position:absolute; padding: 10px;" class="row-padding">
-      <div class="form-group">
-        <label for="title" class="control-label">Title</label>
-        <input class="form-control" id="title" placeholder="Title" ng-model="template.title">
+  <column-toolbar ng-show="!showTree"></column-toolbar>
+  <div class="vertical">
+    <div class="row-resize">
+      <div id="editor" style=""></div>
+    </div>
+    <div ng-show="showConsole" class="row-resize console-bg" style="flex-basis: 200px" resizable r-directions="['top']" r-flex="true" r-no-throttle
+         r-grabber="<div id='resize-bar-row'></div>">
+      <div class="console-container">
+        <div class="console" ng-bind-html="consoleOutput"></div>
       </div>
-      <div class="form-group">
-        <label for="typeSelector" class="control-label">Type</label>
-        <select id="typeSelector" class="col-sm-2 form-control"
-            ng-init="template.type='oacc'" ng-model="template.type">
-          <option value="oacc">Open ACC</option>
-          <option value="cuda">CUDA</option>
-        </select>
-      </div>
-      <div class="row">
-        <button class="btn btn-default margin" ng-click="showSaveTemplate(false)">Cancel</button>
-        <button class="btn btn-success pull-right margin" type="submit" ng-click="saveTemplate()">
-          Save as template
-        </button>
-      </div>
+    </div>
+    <div ng-show="!showConsole">
+      <row-toolbar></row-toolbar>
     </div>
   </div>
 </div>

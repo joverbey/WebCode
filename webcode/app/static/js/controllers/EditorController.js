@@ -1,14 +1,24 @@
-app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '$routeParams', '$location', '$uibModal', function($scope, $http, $window, $interval, $routeParams, $location, $uibModal) {
+app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '$sce', '$compile', '$uibModal', function($scope, $http, $window, $interval, $sce, $compile, $uibModal) {
     var saveTimer;
     var oldValue = '';
     var modalInstance;
     $scope.saving = false;
+    $scope.showConsole = true;
 
     $scope.editor = ace.edit(document.getElementById('editor'));
     $scope.editor.setTheme("ace/theme/twilight");
-    //$scope.editor.setOptions({
-    //    maxLines: Infinity
-    //});
+
+    var createToolbars = function() {
+        var element = document.getElementById('resize-bar-row');
+        var toolbar = angular.element(document.createElement('row-toolbar'));
+        $compile(toolbar)($scope);
+        angular.element(element).append(toolbar);
+        element = document.getElementById('resize-bar-column');
+        toolbar = angular.element(document.createElement('column-toolbar'));
+        $compile(toolbar)($scope);
+        angular.element(element).append(toolbar);
+    };
+    $interval(createToolbars, 0, 1);
 
     $scope.editor.$blockScrolling = Infinity; // hide error message
     $scope.status = 'Saving…';
@@ -16,9 +26,13 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     $scope.jobs = [];
     $scope.consoleOutput = '';
 
+    var resizeEditor = function() {
+        $scope.editor.renderer.onResize(true);
+    };
+
     $scope.$on("angular-resizable.resizing", function (event, args) {
         if (args.height) {
-            $scope.editor.renderer.onResize(true);
+            resizeEditor();
         }
     });
 
@@ -140,7 +154,8 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         });
     };
 
-    $scope.compileAndRun = function() {
+    // TODO: remove this from the window
+    window.compileAndRun = $scope.compileAndRun = function() {
         if ($scope.isSavingTemplate) {
             // uhh... solve this
         }
@@ -161,12 +176,10 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     };
 
     $scope.compileOnly = function() {
-        if ($scope.isSavingTemplate) {
-            // uhh... solve this
-        }
         var fd = new FormData();
         fd.append('run', 0);
         fd.append('project_id', $scope.selectedProject);
+        fd.append('body', $scope.editor.getSession().getValue());
         $http({
             method: 'POST',
             url: 'api/submissions',
@@ -182,9 +195,21 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
 
     $scope.socket.on('submit', function(data) {
         if ($scope.jobs.indexOf(data.job) > -1) {
-            $scope.consoleOutput = $scope.consoleOutput + data.stdout +
-                    data.stderr;
+            $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput + '<p>' + data.stdout + data.stderr + '</p>');
             $scope.$apply();
         }
     });
+
+    $scope.toggleConsole = function() {
+        $scope.showConsole = !$scope.showConsole;
+        $interval(resizeEditor, 0, 1);
+    };
+
+    $scope.toggleShowProjects = function() {
+        $scope.showProjects = !$scope.showProjects;
+    };
+
+    $scope.toggleShowTemplates = function() {
+        $scope.showTemplates = !$scope.showTemplates;
+    };
 }]);
