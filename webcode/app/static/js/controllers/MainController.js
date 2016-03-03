@@ -1,7 +1,6 @@
-app.controller('MainController', ['$scope', '$http', '$route', '$window', function($scope, $http, $route, $window) {
+app.controller('MainController', ['$scope', '$http', '$window', function($scope, $http, $window) {
     $scope.socket = new Socket('ws://' + $window.location.host + '/websocket');
     $scope.isAdmin = false;
-    $scope.$route = $route;
     $scope.isOpen = false;
     $scope.templates = [];
     $scope.projects = [];
@@ -151,4 +150,8 @@ app.controller('MainController', ['$scope', '$http', '$route', '$window', functi
             console.log("error");
         });
     };
+
+    $scope.compileAndRun = function(run) {
+        $scope.$broadcast('execute', run);
+    }
 }]);

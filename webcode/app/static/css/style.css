@@ -110,7 +110,8 @@ body {
 }
 
 .console {
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: break-word;
     color: #fff;
     font-family: 'Source Code Pro', monospace;
     resize: none;
@@ -162,17 +163,6 @@ body {
 .nav-tabs > li.active > a:focus,
 .nav-tabs > li.active > a:hover  {
     background: #f8f8f8;
-}
-
-.center-horizontal {
-    /*float: none;*/
-    margin-left: 0 auto;
-    margin-right: 0 auto;
-}
-
-.center-text-vertical {
-    height: 30px;
-    line-height: 40px;
 }
 
 .margin-top {
@@ -275,6 +265,7 @@ body {
 .console-container {;
     margin-top: 30px;
     overflow: auto;
+    width: 100%;
 }
 
 .console-bg {
@@ -329,4 +320,8 @@ column-toolbar {
 
 .resizable {
     position: relative;
+}
+
+.error {
+    color: #9C1A1C;
 }

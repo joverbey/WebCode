@@ -32,17 +32,19 @@
         </ul>
         <ul class="nav navbar-nav navbar-right ng-cloak">
 
-          <div class="btn-group" uib-dropdown>
-            <button type="button" class="btn btn-success" ng-click="compileAndRun()">
-              Run <span class="glyphicon glyphicon-play"></span>
-            </button>
-            <button type="button" class="btn btn-success" uib-dropdown-toggle>
-              <span class="caret"></span>
-            </button>
-            <ul uib-dropdown-menu>
-              <li><a href="" ng-click="compileOnly()">Compile only</a></li>
-            </ul>
-          </div>
+          <li>
+            <div class="btn-group navbar-btn" uib-dropdown>
+              <button type="button" class="btn btn-success" ng-click="compileAndRun(1)">
+                Run <span class="glyphicon glyphicon-play"></span>
+              </button>
+              <button type="button" class="btn btn-success" uib-dropdown-toggle>
+                <span class="caret"></span>
+              </button>
+              <ul uib-dropdown-menu>
+                <li><a href="" ng-click="compileAndRun(0)">Compile only</a></li>
+              </ul>
+            </div>
+          </li>
 
           <!-- Show user options to the user -->
           <li class="dropdown" is-open="isOpen" uib-dropdown>

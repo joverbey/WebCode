@@ -30,10 +30,33 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         $scope.editor.renderer.onResize(true);
     };
 
+    var execute = function(run) {
+        var fd = new FormData();
+        fd.append('run', run);
+        fd.append('project_id', $scope.selectedProject);
+        fd.append('body', $scope.editor.getSession().getValue());
+        $interval.cancel(saveTimer);
+        $http({
+            method: 'POST',
+            url: 'api/submissions',
+            headers: {'Content-type': undefined},
+            transformRequest: angular.identity,
+            data: fd
+        }).then(function(response) {
+            $scope.jobs.push(response.data.data.job);
+        }, function(error) {
+            console.error(error.data.status + ': ' + error.data.error);
+        });
+    };
+
     $scope.$on("angular-resizable.resizing", function (event, args) {
         if (args.height) {
             resizeEditor();
         }
+    });
+
+    $scope.$on('execute', function(metadata, run) {
+        execute(run);
     });
 
     $scope.editor.on('change', function(e) {
@@ -154,49 +177,13 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         });
     };
 
-    // TODO: remove this from the window
-    window.compileAndRun = $scope.compileAndRun = function() {
-        var fd = new FormData();
-        fd.append('run', 1);
-        fd.append('project_id', $scope.selectedProject);
-        fd.append('body', $scope.editor.getSession().getValue());
-        $interval.cancel(saveTimer);
-        $http({
-            method: 'POST',
-            url: 'api/submissions',
-            headers: {'Content-type': undefined},
-            transformRequest: angular.identity,
-            data: fd
-        }).then(function(response) {
-            $scope.jobs.push(response.data.data.job);
-        }, function(error) {
-            console.error(error.data.status + ': ' + error.data.error);
-        });
-    };
-
-    $scope.compileOnly = function() {
-        var fd = new FormData();
-        fd.append('run', 0);
-        fd.append('project_id', $scope.selectedProject);
-        fd.append('body', $scope.editor.getSession().getValue());
-        $interval.cancel(saveTimer);
-        $http({
-            method: 'POST',
-            url: 'api/submissions',
-            headers: {'Content-type': undefined},
-            transformRequest: angular.identity,
-            data: fd
-        }).then(function(response) {
-            $scope.jobs.push(response.data.data.job);
-        }, function(error) {
-            console.error(error.data.status + ': ' + error.data.error);
-        });
-    };
-
     $scope.socket.on('submit', function(data) {
         if ($scope.jobs.indexOf(data.job) > -1) {
-            $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput + '<p>' + data.stdout + data.stderr + '</p>');
+            var console = document.getElementById('console');
+            $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput + '<p>' + data.stdout + '</p>' +
+                '<p class="error">' + data.stderr + '</p>');
             $scope.$apply();
+            console.scrollTop = console.scrollHeight;
         }
     });
 
