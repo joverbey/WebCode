@@ -156,12 +156,11 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
 
     // TODO: remove this from the window
     window.compileAndRun = $scope.compileAndRun = function() {
-        if ($scope.isSavingTemplate) {
-            // uhh... solve this
-        }
         var fd = new FormData();
         fd.append('run', 1);
         fd.append('project_id', $scope.selectedProject);
+        fd.append('body', $scope.editor.getSession().getValue());
+        $interval.cancel(saveTimer);
         $http({
             method: 'POST',
             url: 'api/submissions',
@@ -180,6 +179,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         fd.append('run', 0);
         fd.append('project_id', $scope.selectedProject);
         fd.append('body', $scope.editor.getSession().getValue());
+        $interval.cancel(saveTimer);
         $http({
             method: 'POST',
             url: 'api/submissions',
@@ -205,11 +205,19 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         $interval(resizeEditor, 0, 1);
     };
 
+    $scope.showSubmission = function(submission) {
+
+    };
+
     $scope.toggleShowProjects = function() {
         $scope.showProjects = !$scope.showProjects;
     };
 
     $scope.toggleShowTemplates = function() {
         $scope.showTemplates = !$scope.showTemplates;
+    };
+
+    $scope.toggleShowSubmissions = function() {
+        $scope.showSubmits = !$scope.showSubmits;
     };
 }]);

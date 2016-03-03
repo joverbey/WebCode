@@ -31,15 +31,25 @@ app.controller('MainController', ['$scope', '$http', '$route', '$window', functi
 
     var getProjects = function() {
         $http.get('/api/projects')
-                .then(function(response) {
+            .then(function(response) {
                     $scope.projects = response.data.data.projects;
                     $scope.selectedProject = response.data.data.selected;
                     for (var project in $scope.projects) {
                         var session = ace.createEditSession(
-                                $scope.projects[project].body, "ace/mode/java");
+                            $scope.projects[project].body, "ace/mode/c_cpp");
                         $scope.projects[project].editSession = session;
                         session.projectId = project;
                     }
+                },
+                function(error) {
+                    console.log(error);
+                });
+    };
+
+    var getSubmissions = function() {
+        $http.get('/api/submissions')
+            .then(function(response) {
+                    $scope.submissions = response.data.data.submissions;
                 },
                 function(error) {
                     console.log(error);
@@ -61,6 +71,7 @@ app.controller('MainController', ['$scope', '$http', '$route', '$window', functi
                 });
             getTemplates();
             getProjects();
+            getSubmissions();
         } else {
             $scope.username = ''; // clear the username field
             $scope.password = ''; // clear the password field
@@ -69,6 +80,7 @@ app.controller('MainController', ['$scope', '$http', '$route', '$window', functi
             $scope.loggedIn = false;
             $scope.templates = [];
             $scope.projects = [];
+            $scope.submissions = [];
         }
     });
 

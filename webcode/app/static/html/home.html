@@ -10,18 +10,30 @@
             Projects
           </div>
           <ul class="project-list" ng-show="showProjects">
-            <li class="project-list-item" ng-repeat="project in projects" ng-class="{'selected-project': selectedProject}">
+            <li class="project-list-item" ng-repeat="project in projects"
+                ng-class="{'selected-project': selectedProject == project.project_id}" ng-click="selectProject(project)">
               {{ project.title }}
             </li>
           </ul>
-          <div class="folder-header" ng-init="showTemplates = true"
+          <div class="folder-header" ng-init="showTemplates = false"
                ng-click="toggleShowTemplates()">
             <span class="glyphicon " ng-class="showTemplates ? 'glyphicon-menu-down' : 'glyphicon-menu-right'">
             </span>
             Templates
           </div>
           <ul class="project-list" ng-show="showTemplates">
-            <li class="project-list-item" ng-repeat="template in templates">{{ template.title }}</li>
+            <li class="project-list-item" ng-repeat="template in templates" ng-click="createProject(template)">
+              {{ template.title }}
+            </li>
+          </ul>
+          <div class="folder-header" ng-init="showSubmits = false"
+               ng-click="toggleShowSubmissions()">
+            <span class="glyphicon " ng-class="showSubmits ? 'glyphicon-menu-down' : 'glyphicon-menu-right'">
+            </span>
+            Previous Submissions
+          </div>
+          <ul class="project-list" ng-show="showSubmits">
+            <li class="project-list-item" ng-repeat="submission in submissions">{{ submission.job }}</li>
           </ul>
         </div>
       </div>
@@ -38,8 +50,6 @@
         <div class="console" ng-bind-html="consoleOutput"></div>
       </div>
     </div>
-    <div ng-show="!showConsole">
-      <row-toolbar></row-toolbar>
-    </div>
+    <row-toolbar ng-show="!showConsole"></row-toolbar>
   </div>
 </div>

@@ -24,5 +24,5 @@ class Project(Base):
             'type': self.type,
             'project_id': repr(self.project_id),
             'last_edited': self.last_edited,
-            'title': 'Projectasdfasdfasdfasdfasdfasdfa #' + str(self.project_id)
+            'title': 'Project #' + str(self.project_id)
         }

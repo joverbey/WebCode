@@ -17,9 +17,9 @@ FILE_EXTENSIONS_FROM_TYPE = {
 }
 
 
-def directory_for_submission(submission):
+def directory_for_submission(job):
     return os.path.join(
-        app.config['DATA_FOLDER'], 'submits', str(submission.job))
+        app.config['DATA_FOLDER'], 'submits', str(job))
 
 
 @app.route('/api/submissions', methods=['POST'])
@@ -27,9 +27,10 @@ def directory_for_submission(submission):
 def create_submission():
     try:
         project = (session.query(Project).filter(
-            Project.project_id == int(request.form['project_id'])
-                and Project.username == current_user.username).first())
+                    Project.project_id == int(request.form['project_id']) and
+                    Project.username == current_user.username).first())
 
+        project.body = request.form['body']
         submission = Submission(
             username=current_user.username,
             submit_time=int(time.time()),
@@ -41,8 +42,9 @@ def create_submission():
         return serve_error('Form data missing.')
 
     submission.commit_to_session()
+    project.commit_to_session()
 
-    directory = directory_for_submission(submission)
+    directory = directory_for_submission(submission.job)
     os.mkdir(directory)
     file_name = 'submit' + FILE_EXTENSIONS_FROM_TYPE[submission.type]
     source_file = open(os.path.join(directory, file_name), 'w')
@@ -54,4 +56,28 @@ def create_submission():
 
     return serve_response({
         'job': submission.job
+    })
+
+
+@app.route('/api/submissions')
+@login_required
+def get_submissions():
+    submissions = session.query(Submission).filter(Submission.username == current_user.username).all()
+    subs = list()
+    for s in submissions:
+        subs.append(s.to_dict())
+    return serve_response({'submissions': subs})
+
+
+@app.route('/api/submissions/<int:job>')
+@login_required
+def get_submission(job):
+    submission = session.query(Submission).filter(Submission.username == current_user.username and
+                                                  Submission.job == job).first()
+    directory = directory_for_submission(job)
+    file_name = 'submit' + FILE_EXTENSIONS_FROM_TYPE[submission.type]
+    source_file = open(os.path.join(directory, file_name))
+    body = source_file.read()
+    return serve_response({
+        'body': body
     })

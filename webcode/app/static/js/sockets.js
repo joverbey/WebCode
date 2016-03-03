@@ -3,7 +3,6 @@ function Socket(url) {
     var parent = this;
 
     this.on = function(event, func) {
-        console.log('assigning', event);
         parent.events[event] = func;
     };
 
