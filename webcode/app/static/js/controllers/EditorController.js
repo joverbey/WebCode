@@ -6,7 +6,15 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     $scope.showConsole = true;
 
     $scope.editor = ace.edit(document.getElementById('editor'));
-    $scope.editor.setTheme("ace/theme/twilight");
+    $scope.editor.setTheme('ace/theme/twilight');
+    $scope.editor.commands.addCommand({
+        name: 'Save',
+        bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
+        exec: function(editor) {
+            sendSave($scope.selectedProject);
+        },
+        readOnly: false
+    });
 
     var createToolbars = function() {
         var element = document.getElementById('resize-bar-row');

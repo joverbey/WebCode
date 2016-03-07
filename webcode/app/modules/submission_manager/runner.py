@@ -45,7 +45,6 @@ def allowed_filetype(filename):
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS)
 
 
-
 class RunnerQueueThread(threading.Thread):
 
     def __init__(self):
@@ -85,9 +84,14 @@ class Runner:
             app.config['DATA_FOLDER'], 'submits', str(self.submission.job)))
 
     def run_queued(self):
-        Runner.runner_thread.add(self)
-        if not Runner.runner_thread.is_alive():
+        try:
+            if not Runner.runner_thread.is_alive():
+                Runner.runner_thread.start()
+        except RuntimeError:  # something bad happened; we need to restart the queue thread. TODO: look more into this
+            Runner.runner_thread = RunnerQueueThread()
             Runner.runner_thread.start()
+
+        Runner.runner_thread.add(self)
 
     def run(self):
         """Attempts to compile then execute a given file if the run flag is set.

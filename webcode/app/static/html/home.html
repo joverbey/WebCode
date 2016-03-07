@@ -5,7 +5,7 @@
         <div class="tree-view" style="color: #FFFFFF;">
           <div class="folder-header" ng-init="showProjects = true"
                ng-click="toggleShowProjects()">
-            <span class="glyphicon " ng-class="showProjects ? 'glyphicon-menu-down' : 'glyphicon-menu-right'">
+            <span class="glyphicon text-center-vertical" ng-class="showProjects ? 'glyphicon-menu-down' : 'glyphicon-menu-right'">
             </span>
             Projects
           </div>
@@ -14,10 +14,14 @@
                 ng-class="{'selected-project': selectedProject == project.project_id}" ng-click="selectProject(project)">
               {{ project.title }}
             </li>
+            <li class="project-list-item" ng-click="createNewProject()">
+              <span class="glyphicon glyphicon-plus"></span>
+              Create empty project
+            </li>
           </ul>
           <div class="folder-header" ng-init="showTemplates = false"
                ng-click="toggleShowTemplates()">
-            <span class="glyphicon " ng-class="showTemplates ? 'glyphicon-menu-down' : 'glyphicon-menu-right'">
+            <span class="glyphicon text-center-vertical" ng-class="showTemplates ? 'glyphicon-menu-down' : 'glyphicon-menu-right'">
             </span>
             Templates
           </div>
@@ -25,10 +29,14 @@
             <li class="project-list-item" ng-repeat="template in templates" ng-click="createProject(template)">
               {{ template.title }}
             </li>
+            <li class="project-list-item" ng-if="isAdmin" ng-click="createNewTemplate()">
+              <span class="glyphicon glyphicon-plus"></span>
+              Create template
+            </li>
           </ul>
           <div class="folder-header" ng-init="showSubmits = false"
                ng-click="toggleShowSubmissions()">
-            <span class="glyphicon " ng-class="showSubmits ? 'glyphicon-menu-down' : 'glyphicon-menu-right'">
+            <span class="glyphicon text-center-vertical" ng-class="showSubmits ? 'glyphicon-menu-down' : 'glyphicon-menu-right'">
             </span>
             Previous Submissions
           </div>

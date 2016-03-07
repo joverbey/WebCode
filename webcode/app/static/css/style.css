@@ -325,3 +325,7 @@ column-toolbar {
 .error {
     color: #9C1A1C;
 }
+
+.text-center-vertical {
+    vertical-align: middle;
+}
