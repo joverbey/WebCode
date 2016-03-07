@@ -258,6 +258,10 @@ body {
     background: #444;
 }
 
+.project-list > li:hover > .edit-project {
+    color: white;
+}
+
 .selected-project {
     background: #333;
 }
@@ -328,4 +332,27 @@ column-toolbar {
 
 .text-center-vertical {
     vertical-align: middle;
+}
+
+.banner {
+}
+
+.banner-success {
+    background: #5cb85c;
+    border-color: #4cae4c;
+    color: white;
+    padding: 10px;
+    border-bottom: 1px solid transparent;
+}
+
+.banner-success:hover {
+    background: #4cae4c;
+    cursor: pointer;
+}
+
+.edit-project {
+    float: right;
+    color: transparent;
+    margin: -5px;
+    padding: 5px;
 }

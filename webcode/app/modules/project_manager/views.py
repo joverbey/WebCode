@@ -3,11 +3,11 @@ from flask import request
 from flask.ext.login import login_required, current_user
 from app import app
 from app.database import session
-from app.util import serve_response
+from app.util import serve_response, serve_error
 from app.modules.project_manager.models import Project
 from app.modules.sockets.socket_handler import SocketHandler
-from app.modules.template_manager.models import Template
 import time
+
 
 @app.route('/api/projects')
 @login_required
@@ -26,22 +26,22 @@ def get_projects():
 @login_required
 def create_project():
     try:
-        template = (session.query(Template)
-                    .filter(Template.template_id ==
-                            int(request.form['template_id']))).first()
         project = Project(
             username=current_user.username,
-            body=template.body,
-            cursor_x=template.cursor_x,
-            cursor_y=template.cursor_y,
-            type=template.type,
+            body=request.form['body'],
+            cursor_x=0,
+            cursor_y=0,
+            type=request.form['type'],
+            title=request.form['title'],
             last_edited=int(time.time()),
-            template_id=template.template_id
+            template_id=int(request.form['template_id'])
         )
     except KeyError as error:
         return serve_error('Form field not found: ' + error[0])
+
     project.commit_to_session()
     return serve_response(project.to_dict())
+
 
 @SocketHandler.on('save')
 def on_save(data):

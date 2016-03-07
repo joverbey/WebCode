@@ -13,8 +13,10 @@
             <li class="project-list-item" ng-repeat="project in projects"
                 ng-class="{'selected-project': selectedProject == project.project_id}" ng-click="selectProject(project)">
               {{ project.title }}
+
+              <span class="edit-project glyphicon glyphicon-pencil"></span>
             </li>
-            <li class="project-list-item" ng-click="createNewProject()">
+            <li class="project-list-item" ng-click="showCreateProjectModal()">
               <span class="glyphicon glyphicon-plus"></span>
               Create empty project
             </li>
@@ -26,7 +28,7 @@
             Templates
           </div>
           <ul class="project-list" ng-show="showTemplates">
-            <li class="project-list-item" ng-repeat="template in templates" ng-click="createProject(template)">
+            <li class="project-list-item" ng-repeat="template in templates" ng-click="showTemplate(template)">
               {{ template.title }}
             </li>
             <li class="project-list-item" ng-if="isAdmin" ng-click="createNewTemplate()">
@@ -41,7 +43,9 @@
             Previous Submissions
           </div>
           <ul class="project-list" ng-show="showSubmits">
-            <li class="project-list-item" ng-repeat="submission in submissions">{{ submission.job }}</li>
+            <li class="project-list-item" ng-repeat="submission in submissions" ng-click="showSubmission(submission)">
+              {{ submission.job }}
+            </li>
           </ul>
         </div>
       </div>
@@ -49,10 +53,16 @@
   </div>
   <column-toolbar ng-show="!showTree"></column-toolbar>
   <div class="vertical">
+    <div ng-show="isShowingTemplate" class="banner">
+      <div class="banner-success" ng-click="showCreateProjectModal(template)">
+        <span class="glyphicon glyphicon-plus"></span>
+        Create project from this template
+      </div>
+    </div>
     <div class="row-resize">
       <div id="editor" style=""></div>
     </div>
-    <div ng-show="showConsole" class="row-resize console-bg" style="flex-basis: 200px" resizable r-directions="['top']" r-flex="true" r-no-throttle
+    <div ng-show="showConsole && isEditing" class="row-resize console-bg" style="flex-basis: 200px" resizable r-directions="['top']" r-flex="true" r-no-throttle
          r-grabber="<div id='resize-bar-row'></div>">
       <div id="console" class="console-container">
         <div class="console" ng-bind-html="consoleOutput"></div>

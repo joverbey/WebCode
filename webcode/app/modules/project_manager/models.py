@@ -2,11 +2,17 @@
 
 from app.database import Base, session
 
+
+TYPE_EXTENSIONS = {
+    'oacc': '.c',
+    'cuda': '.cu'
+}
+
+
 class Project(Base):
     """Model object for entries in the templates database table."""
 
     __tablename__ = 'projects'
-
 
     def commit_to_session(self):
         """Commit this problem to the database as a new template."""
@@ -14,7 +20,6 @@ class Project(Base):
         session.flush()
         session.commit()
         session.refresh(self)
-
 
     def to_dict(self):
         return {
@@ -24,5 +29,5 @@ class Project(Base):
             'type': self.type,
             'project_id': repr(self.project_id),
             'last_edited': self.last_edited,
-            'title': 'Project #' + str(self.project_id)
+            'title': self.title + TYPE_EXTENSIONS[self.type]
         }

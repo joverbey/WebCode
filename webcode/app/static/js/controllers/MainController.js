@@ -5,6 +5,14 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
     $scope.templates = [];
     $scope.projects = [];
     $scope.showTree = true;
+    $scope.EDIT_SESSION_TYPES = {
+        oacc: 'ace/mode/c_cpp',
+        cuda: 'ace/mode/c_cpp'
+    };
+    $scope.TYPE_TO_EXT = {
+        oacc: '.c',
+        cuda: '.cu'
+    };
 
     $scope.reconnectToSocket = function() {
         $scope.socket.refresh();

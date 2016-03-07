@@ -1,9 +1,13 @@
 app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '$sce', '$compile', '$uibModal', function($scope, $http, $window, $interval, $sce, $compile, $uibModal) {
     var saveTimer;
-    var oldValue = '';
-    var modalInstance;
+    var disconnectedModal;
     $scope.saving = false;
     $scope.showConsole = true;
+    $scope.status = 'Saving…';
+    $scope.template = {};
+    $scope.jobs = [];
+    $scope.consoleOutput = '';
+    $scope.isEditing = true;
 
     $scope.editor = ace.edit(document.getElementById('editor'));
     $scope.editor.setTheme('ace/theme/twilight');
@@ -29,13 +33,18 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     $interval(createToolbars, 0, 1);
 
     $scope.editor.$blockScrolling = Infinity; // hide error message
-    $scope.status = 'Saving…';
-    $scope.template = {};
-    $scope.jobs = [];
-    $scope.consoleOutput = '';
 
     var resizeEditor = function() {
         $scope.editor.renderer.onResize(true);
+    };
+
+    var lockEditor = function(bool) {
+        $scope.editor.setReadOnly(bool);
+    };
+
+    var hideConsole = function(bool) {
+        $scope.showConsole = !bool;
+        $interval(resizeEditor, 0, 1);
     };
 
     var execute = function(run) {
@@ -74,9 +83,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     });
     $scope.editor.on('changeSession', function(object) {
         var old = object.oldSession;
-        if (old.getValue() !== oldValue) {
-            sendSave(old.projectId);
-        }
+        sendSave(old.projectId);
     });
 
     $scope.socket.on('close', function(event) {
@@ -84,8 +91,8 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         if (saveTimer) {
             $interval.cancel(saveTimer);
         }
-        if (modalInstance === undefined) {
-            modalInstance = $uibModal.open({
+        if (disconnectedModal === undefined) {
+            disconnectedModal = $uibModal.open({
                 templateUrl: 'disconnectModal.html',
                 controller: 'DisconnectModalController',
                 size: 'sm',
@@ -98,15 +105,8 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
 
     $scope.socket.on('open', function(event) {
         $scope.editor.setReadOnly(false);
-        modalInstance.dismiss('open');
-        modalInstance = undefined;
-    });
-
-    $scope.$watch('selectedProject', function(newValue, oldValue) {
-        if (newValue in $scope.projects) {
-            $scope.editor.setSession($scope.projects[newValue].editSession);
-            setStatus();
-        }
+        disconnectedModal.dismiss('open');
+        disconnectedModal = undefined;
     });
 
     var sendSave = function(projectId) {
@@ -196,12 +196,64 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     });
 
     $scope.toggleConsole = function() {
-        $scope.showConsole = !$scope.showConsole;
-        $interval(resizeEditor, 0, 1);
+        hideConsole($scope.showConsole);
     };
 
     $scope.showSubmission = function(submission) {
+        if ($scope.isEditing) {
+            sendSave();
+        }
+        lockEditor(true);
+        hideConsole(true);
+        $scope.isEditing = false;
+        $scope.isShowingTemplate = false;
+        var editSession = ace.createEditSession('', $scope.EDIT_SESSION_TYPES[submission.type]);
+        $scope.status = 'Loading Submission #' + submission.job + '...';
+        $scope.editor.setSession(editSession);
 
+        $http.get('/api/submissions/' + submission.job)
+            .then(function(response) {
+                    submission.body = response.data.data.body;
+                    $scope.status = 'Viewing Submission #' + submission.job + ' (Read only)';
+                    editSession.setValue(submission.body);
+                },
+                function(error) {
+                    console.log(error);
+                });
+    };
+
+    $scope.showTemplate = function(template) {
+        if ($scope.isEditing) {
+            sendSave();
+        }
+        lockEditor(true);
+        hideConsole(true);
+        $scope.isEditing = false;
+        $scope.isShowingTemplate = true;
+        $scope.editor.setSession(ace.createEditSession(template.body, "ace/mode/c_cpp"));
+        $scope.status = 'Viewing template (Read only)';
+        $scope.template = template;
+    };
+
+    $scope.$watch('selectedProject', function(newValue, oldValue) {
+        if (newValue in $scope.projects) {
+            lockEditor(false);
+            hideConsole(false);
+            $scope.isEditing = true;
+            $scope.isShowingTemplate = false;
+            $scope.editor.setSession($scope.projects[newValue].editSession);
+            setStatus();
+        }
+    });
+
+    $scope.showCreateProjectModal = function(template) {
+        $uibModal.open({
+            templateUrl: '/static/html/new-project.html',
+            controller: 'CreateProjectModalController',
+            size: 'sm',
+            scope: $scope,
+            resolve: {template: template}
+        });
     };
 
     $scope.toggleShowProjects = function() {
