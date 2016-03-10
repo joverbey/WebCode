@@ -27,17 +27,28 @@ def get_projects():
 def create_project():
     try:
         project = Project(
-            username=current_user.username,
-            body=request.form['body'],
-            cursor_x=0,
-            cursor_y=0,
-            type=request.form['type'],
-            title=request.form['title'],
-            last_edited=int(time.time()),
-            template_id=int(request.form['template_id'])
+                username=current_user.username,
+                body=request.form['body'],
+                cursor_x=0,
+                cursor_y=0,
+                type=request.form['type'],
+                title=request.form['title'],
+                last_edited=int(time.time()),
+                template_id=int(request.form['template_id'])
         )
     except KeyError as error:
         return serve_error('Form field not found: ' + error[0])
+
+    project.commit_to_session()
+    return serve_response(project.to_dict())
+
+
+@app.route('/api/projects/<int:project_id>', methods=['PUT'])
+@login_required
+def edit_project(project_id):
+    project = session.query(Project).filter(Project.project_id == project_id).first()
+    project.title = request.form['title']
+    project.type = request.form['type']
 
     project.commit_to_session()
     return serve_response(project.to_dict())

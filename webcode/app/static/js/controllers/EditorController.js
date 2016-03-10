@@ -135,7 +135,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         var project = $scope.projects[$scope.selectedProject];
         var date = new Date(project.last_edited * 1000);
         var now = new Date();
-        var status = 'Last edit was ';
+        var status = 'Last save was ';
         if (date.toDateString() !== now.toDateString()) {
             status = status + 'on ' + date.toLocaleDateString() + ' ';
         }
@@ -156,10 +156,6 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
 
     $scope.showSaveTemplate = function(show) {
         $scope.isSavingTemplate = !!show;
-    };
-
-    $scope.selectProject = function(project) {
-        $scope.selectedProject = project.project_id;
     };
 
     $scope.saveTemplate = function() {
@@ -206,10 +202,12 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         lockEditor(true);
         hideConsole(true);
         $scope.isEditing = false;
+        $scope.showBanner = true;
         $scope.isShowingTemplate = false;
         var editSession = ace.createEditSession('', $scope.EDIT_SESSION_TYPES[submission.type]);
         $scope.status = 'Loading Submission #' + submission.job + '...';
         $scope.editor.setSession(editSession);
+        $scope.submission = submission;
 
         $http.get('/api/submissions/' + submission.job)
             .then(function(response) {
@@ -230,21 +228,21 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         hideConsole(true);
         $scope.isEditing = false;
         $scope.isShowingTemplate = true;
+        $scope.showBanner = true;
         $scope.editor.setSession(ace.createEditSession(template.body, "ace/mode/c_cpp"));
         $scope.status = 'Viewing template (Read only)';
         $scope.template = template;
     };
 
-    $scope.$watch('selectedProject', function(newValue, oldValue) {
-        if (newValue in $scope.projects) {
-            lockEditor(false);
-            hideConsole(false);
-            $scope.isEditing = true;
-            $scope.isShowingTemplate = false;
-            $scope.editor.setSession($scope.projects[newValue].editSession);
-            setStatus();
-        }
-    });
+    $scope.selectProject = function(project) {
+        $scope.selectedProject = project.project_id;
+        lockEditor(false);
+        hideConsole(false);
+        $scope.isEditing = true;
+        $scope.showBanner = false;
+        $scope.editor.setSession(project.editSession);
+        setStatus();
+    };
 
     $scope.showCreateProjectModal = function(template) {
         $uibModal.open({
@@ -267,4 +265,14 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     $scope.toggleShowSubmissions = function() {
         $scope.showSubmits = !$scope.showSubmits;
     };
+
+    $scope.showEditProjectModal = function(project) {
+        $uibModal.open({
+            templateUrl: '/static/html/edit-project.html',
+            controller: 'EditProjectModalController',
+            size: 'sm',
+            scope: $scope,
+            resolve: {project: project}
+        });
+    }
 }]);

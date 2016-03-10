@@ -38,3 +38,9 @@ app.directive('columnToolbar', function() {
         templateUrl: '/static/html/column-toolbar.html'
     };
 });
+
+app.filter('iif', function () {
+    return function(input, trueValue, falseValue) {
+        return input ? trueValue : falseValue;
+    };
+});

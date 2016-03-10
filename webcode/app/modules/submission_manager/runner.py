@@ -11,12 +11,12 @@ from app.modules.sockets.socket_handler import SocketHandler
 
 ALLOWED_EXTENSIONS = ['java', 'c']
 COMPILE_COMMAND = {
-    'java': 'javac {0}.java',
-    'c': 'gcc {0}.c -o {0}'
+    'oacc': 'gcc {0}.c -o {0}',
+    'cuda': 'gcc {0}.c -o {0}'
 }
 RUN_COMMAND = {
-    'java': 'java -cp {0}/ {1}',
-    'c': '{0}/{1}'
+    'oacc': '{0}/{1}',
+    'cuda': '{0}/{1}'
 }
 FILE_EXTENSIONS_FROM_TYPE = {
     'cuda': '.cu',
@@ -145,7 +145,7 @@ class Runner:
         name, _ = filename.rsplit('.', 1)
 
         result = subprocess.call(
-            shlex.split(COMPILE_COMMAND['c'].format(os.path.join(directory, name))),
+            shlex.split(COMPILE_COMMAND[self.submission.type].format(os.path.join(directory, name))),
             stderr=open(os.path.join(directory, COMPILE_PART + ERR_FILE_NAME), 'w'),
             stdout=open(os.path.join(directory, COMPILE_PART + OUT_FILE_NAME), 'w')
         )
@@ -203,7 +203,7 @@ class Runner:
 
         # Create the subprocess
         process = subprocess.Popen(
-            shlex.split(RUN_COMMAND['c'].format(self.submission_path, name)),
+            shlex.split(RUN_COMMAND[self.submission.type].format(self.submission_path, name)),
             stdout=open(os.path.join(directory, EXECUTE_PART + OUT_FILE_NAME), 'w'),
             stderr=open(os.path.join(directory, EXECUTE_PART + ERR_FILE_NAME), 'w'))
 
