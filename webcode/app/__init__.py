@@ -11,3 +11,4 @@ from app import views
 from app.modules.template_manager import views
 from app.modules.project_manager import views
 from app.modules.submission_manager import views
+from app.modules.event_manager import views

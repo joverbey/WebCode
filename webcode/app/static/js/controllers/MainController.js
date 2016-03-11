@@ -161,5 +161,13 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
 
     $scope.compileAndRun = function(run) {
         $scope.$broadcast('execute', run);
-    }
+        $scope.logEvent('execute', $scope.selectedProject);
+    };
+
+    $scope.logEvent = function(type, details) {
+        $scope.socket.send('event', {
+            type: type,
+            details: typeof details === 'undefined' ? 'None' : details
+        });
+    };
 }]);

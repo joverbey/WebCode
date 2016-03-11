@@ -1,5 +1,6 @@
-app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '$sce', '$compile', '$uibModal', function($scope, $http, $window, $interval, $sce, $compile, $uibModal) {
+app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '$sce', '$compile', '$uibModal', '$timeout', function($scope, $http, $window, $interval, $sce, $compile, $uibModal, $timeout) {
     var saveTimer;
+    var inactiveTimer;
     var disconnectedModal;
     $scope.saving = false;
     $scope.showConsole = true;
@@ -19,6 +20,36 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         },
         readOnly: false
     });
+
+    var resetTimeout = function() {
+        if (inactiveTimer) {
+            $timeout.cancel(inactiveTimer);
+        } else {
+            // send active
+            $scope.logEvent('active');
+        }
+        inactiveTimer = $timeout(function() {
+            $scope.logEvent('inactive');
+            inactiveTimer = undefined;
+        }, 30000, false);
+    };
+    resetTimeout();
+
+    $scope.editor.on('change', resetTimeout);
+    $scope.editor.on('changeSelectionStyle', resetTimeout);
+    $scope.editor.on('copy', resetTimeout);
+    $scope.editor.on('focus', resetTimeout);
+    $scope.editor.on('paste', resetTimeout);
+    $scope.editor.on('changeSession', function(o) {
+        resetTimeout();
+
+        o.session.getSelection().on('changeSelection', resetTimeout);
+        o.session.getSelection().on('changeCursor', resetTimeout);
+        o.session.on('change', resetTimeout);
+        o.session.on('changeScrollTop', resetTimeout);
+        o.session.on('changeScrollLeft', resetTimeout);
+    });
+
 
     var createToolbars = function() {
         var element = document.getElementById('resize-bar-row');
@@ -66,7 +97,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         });
     };
 
-    $scope.$on("angular-resizable.resizing", function (event, args) {
+    $scope.$on('angular-resizable.resizing', function (event, args) {
         if (args.height) {
             resizeEditor();
         }
@@ -218,6 +249,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
                 function(error) {
                     console.log(error);
                 });
+        $scope.logEvent('showprev', submission.job);
     };
 
     $scope.showTemplate = function(template) {
@@ -229,9 +261,10 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         $scope.isEditing = false;
         $scope.isShowingTemplate = true;
         $scope.showBanner = true;
-        $scope.editor.setSession(ace.createEditSession(template.body, "ace/mode/c_cpp"));
+        $scope.editor.setSession(ace.createEditSession(template.body, 'ace/mode/c_cpp'));
         $scope.status = 'Viewing template (Read only)';
         $scope.template = template;
+        $scope.logEvent('showtemp', template.template_id);
     };
 
     $scope.selectProject = function(project) {
@@ -242,6 +275,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         $scope.showBanner = false;
         $scope.editor.setSession(project.editSession);
         setStatus();
+        $scope.logEvent('switch', project.project_id);
     };
 
     $scope.showCreateProjectModal = function(template) {

@@ -1,4 +1,5 @@
 from app import app
+from app.modules.event_manager.models import Event
 from flask.sessions import SecureCookieSessionInterface
 import tornado.websocket
 from json import loads
@@ -68,12 +69,14 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
                     FakeRequest(cookie)
             )
             self.username = session['user_id']
+            Event.log(self.username, 'start')
         except:
             pass
 
     def on_close(self):
         """Remove a client from the connection pool"""
         SocketHandler.clients.remove(self)
+        Event.log(self.username, 'finish')
 
     def on_message(self, message):
         """
@@ -84,9 +87,8 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         """
         try:
             messageDict = loads(message)
-            messageDict['data']['username'] = self.username
             if messageDict['eventType'] in self.callbacks:
-                self.callbacks[messageDict['eventType']](messageDict['data'])
+                self.callbacks[messageDict['eventType']](messageDict['data'], self.username)
             else:
                 print('not in callbacks: ' + messageDict['eventType'])
         except:

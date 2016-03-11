@@ -55,7 +55,7 @@ def edit_project(project_id):
 
 
 @SocketHandler.on('save')
-def on_save(data):
+def on_save(data, username):
     """Save the project"""
     project = (session.query(Project)
                .filter(Project.project_id == data['project_id']
