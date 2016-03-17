@@ -8,7 +8,6 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     $scope.template = {};
     $scope.jobs = [];
     $scope.consoleOutput = '';
-    $scope.isEditing = true;
 
     $scope.editor = ace.edit(document.getElementById('editor'));
     $scope.editor.setTheme('ace/theme/twilight');
@@ -308,5 +307,9 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
             scope: $scope,
             resolve: {project: project}
         });
-    }
+    };
+
+    $scope.$watch('isEditing', function(newValue) {
+        $scope.$emit('isEditing', newValue);
+    });
 }]);

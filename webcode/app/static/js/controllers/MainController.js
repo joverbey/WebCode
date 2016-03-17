@@ -5,6 +5,8 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
     $scope.templates = [];
     $scope.projects = [];
     $scope.showTree = true;
+    $scope.isEditing = true;
+
     $scope.EDIT_SESSION_TYPES = {
         oacc: 'ace/mode/c_cpp',
         cuda: 'ace/mode/c_cpp'
@@ -170,4 +172,8 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
             details: typeof details === 'undefined' ? 'None' : details
         });
     };
+
+    $scope.$on('isEditing', function(scope, value) {
+        $scope.isEditing = !!value;
+    });
 }]);
