@@ -2,6 +2,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     var saveTimer;
     var inactiveTimer;
     var disconnectedModal;
+    var active = false;
     $scope.saving = false;
     $scope.showConsole = true;
     $scope.status = 'Saving…';
@@ -21,6 +22,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     });
 
     var resetTimeout = function() {
+        active = true;
         if (inactiveTimer) {
             $timeout.cancel(inactiveTimer);
         } else {
@@ -28,6 +30,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
             $scope.logEvent('active');
         }
         inactiveTimer = $timeout(function() {
+            active = false;
             $scope.logEvent('inactive');
             inactiveTimer = undefined;
         }, 30000, false);
@@ -39,12 +42,12 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     $scope.editor.on('copy', resetTimeout);
     $scope.editor.on('focus', resetTimeout);
     $scope.editor.on('paste', function(o1) {
-        resetTimeout();
-        console.log(o1);
         $scope.logEvent('paste', {
             inserted: o1.text.length,
-            newSize: $scope.editor.getSession().getValue().length
+            newSize: $scope.editor.getSession().getValue().length,
+            activePrior: active
         });
+        resetTimeout();
     });
     $scope.editor.on('changeSession', function(o) {
         resetTimeout();

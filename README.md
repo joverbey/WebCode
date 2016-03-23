@@ -4,7 +4,7 @@
 - [x] Log in (we can create credentials in advance, if it's easier)
 - [x] Select a project to open (we can create and set up projects on the server in advance)
 - [x] Edit code - cf. http://ace.ajax.org
-  - [ ] Log if the user is active (editing/scrolling/etc.) or inactive once every 30 seconds/minute (with timestamp)
+  - [x] Log if the user is active (editing/scrolling/etc.) or inactive once every 30 seconds/minute (with timestamp)
   - [x] Automatically save the user's code to the server once every 30 seconds/minute
   - [x] Warn (lock editor?) if the connection is lost
 - [ ] Compile code, displaying warnings/errors
