@@ -38,7 +38,14 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     $scope.editor.on('changeSelectionStyle', resetTimeout);
     $scope.editor.on('copy', resetTimeout);
     $scope.editor.on('focus', resetTimeout);
-    $scope.editor.on('paste', resetTimeout);
+    $scope.editor.on('paste', function(o1) {
+        resetTimeout();
+        console.log(o1);
+        $scope.logEvent('paste', {
+            inserted: o1.text.length,
+            newSize: $scope.editor.getSession().getValue().length
+        });
+    });
     $scope.editor.on('changeSession', function(o) {
         resetTimeout();
 

@@ -12,12 +12,12 @@ import time
 @app.route('/api/projects')
 @login_required
 def get_projects():
-    projects = session.query(Project).all()
+    projects = session.query(Project).filter(Project.username == current_user.username).all()
     ret = dict()
     for project in projects:
         ret[repr(project.project_id)] = project.to_dict()
     return serve_response({
-        'selected': repr(projects[0].project_id),
+        'selected': repr(projects[0].project_id) if len(projects) > 0 else -1,
         'projects': ret
     })
 

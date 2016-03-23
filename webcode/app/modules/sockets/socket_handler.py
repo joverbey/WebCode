@@ -91,7 +91,8 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
                 self.callbacks[messageDict['eventType']](messageDict['data'], self.username)
             else:
                 print('not in callbacks: ' + messageDict['eventType'])
-        except:
+        except Exception as e:
+            print(e)
             app.logger.error('Could not parse JSON from socket message: ' +
                              message)
 

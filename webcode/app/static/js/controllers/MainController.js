@@ -155,7 +155,6 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
     $scope.logOut = function() {
         $http.get('/api/logout').then(function(response) {
             $scope.loggedIn = false;
-            getProblems();
         }, function(response) {
             console.log("error");
         });
@@ -169,7 +168,7 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
     $scope.logEvent = function(type, details) {
         $scope.socket.send('event', {
             type: type,
-            details: typeof details === 'undefined' ? 'None' : details
+            details: typeof details === 'undefined' ? 'None' : JSON.stringify(details)
         });
     };
 
