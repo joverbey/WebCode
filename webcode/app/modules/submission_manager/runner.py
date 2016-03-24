@@ -11,8 +11,10 @@ from app.modules.sockets.socket_handler import SocketHandler
 
 ALLOWED_EXTENSIONS = ['java', 'c']
 COMPILE_COMMAND = {
-    'oacc': 'gcc {0}.c -o {0}',
-    'cuda': 'gcc {0}.c -o {0}'
+    # 'oacc': 'gcc {0}.c -o {0}',
+    # 'cuda': 'gcc {0}.c -o {0}',
+    'oacc': 'pgcc -ta=nvidia -Minfo=accel -o {0} {0}.c',
+    'cuda': 'nvcc -o {0} {0}.cu'
 }
 RUN_COMMAND = {
     'oacc': '{0}/{1}',
