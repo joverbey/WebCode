@@ -1,5 +1,6 @@
 from app import app
 from app.database import session
+from app.modules.event_manager.models import Event
 from app.modules.user_manager.models import User
 from app.util import serve_response, serve_error, load_user, bcrypt
 from flask import render_template, request
@@ -37,6 +38,7 @@ def log_in():
         if bcrypt.check_password_hash(hashed, password):
             # everything's gucci
             login_user(user)
+            Event.log(username, 'start')
             return serve_response({})
     return serve_error('invalid username or password', 401)
 
@@ -44,6 +46,7 @@ def log_in():
 @app.route('/api/logout')
 @login_required
 def log_out():
+    Event.log(current_user.username, 'finish')
     logout_user()
     return serve_response({})
 

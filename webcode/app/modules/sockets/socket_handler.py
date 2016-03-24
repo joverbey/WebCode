@@ -69,7 +69,8 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
                     FakeRequest(cookie)
             )
             self.username = session['user_id']
-            Event.log(self.username, 'start')
+            if self.username is not None:
+                Event.log(self.username, 'start')
         except:
             pass
 
@@ -88,7 +89,7 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         try:
             messageDict = loads(message)
             if messageDict['eventType'] in self.callbacks:
-                self.callbacks[messageDict['eventType']](messageDict['data'], self.username)
+                self.callbacks[messageDict['eventType']](messageDict['data'], messageDict['data']['username'])
             else:
                 print('not in callbacks: ' + messageDict['eventType'])
         except Exception as e:

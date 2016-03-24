@@ -6,6 +6,7 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
     $scope.projects = [];
     $scope.showTree = true;
     $scope.isEditing = true;
+    var username;
 
     $scope.EDIT_SESSION_TYPES = {
         oacc: 'ace/mode/c_cpp',
@@ -70,6 +71,7 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
         if (newVal) {
             $http.get('/api/me')
                 .then(function(response) {
+                    username = response.data.data.username;
                     $scope.username = response.data.data.username;
                     $scope.displayName = response.data.data.displayName;
                     $scope.isAdmin = response.data.data.isAdmin;
@@ -168,6 +170,7 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
     $scope.logEvent = function(type, details) {
         $scope.socket.send('event', {
             type: type,
+            username: username,
             details: typeof details === 'undefined' ? 'None' : JSON.stringify(details)
         });
     };
