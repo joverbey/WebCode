@@ -4,6 +4,7 @@ from flask.ext.login import login_required, current_user
 from app import app
 from app.database import session
 from app.util import serve_response, serve_error
+from app.modules.event_manager.models import Event
 from app.modules.project_manager.models import Project
 from app.modules.submission_manager.models import Submission
 from app.modules.submission_manager.runner import Runner
@@ -44,6 +45,8 @@ def create_submission():
     submission.commit_to_session()
     project.commit_to_session()
 
+    Event.log(current_user.username, 'execute', submission.job)
+
     directory = directory_for_submission(submission.job)
     os.mkdir(directory)
     file_name = 'submit' + FILE_EXTENSIONS_FROM_TYPE[submission.type]
@@ -76,7 +79,6 @@ def get_submission(job):
                                                   Submission.job == job).first()
     directory = directory_for_submission(job)
     file_name = 'submit' + FILE_EXTENSIONS_FROM_TYPE[submission.type]
-    print(file_name)
     source_file = open(os.path.join(directory, file_name))
     body = source_file.read()
     return serve_response({
