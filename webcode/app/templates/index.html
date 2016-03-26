@@ -134,10 +134,15 @@
     <div class="modal-header">
       <h3 class="modal-title">Disconnected from server</h3>
     </div>
-    <div class="modal-body">
+    <div class="modal-body" ng-if="!multipleClients">
       You're disconnected from the server, so any work you do won't be able to be
       saved. Check your network connection to ensure you are connected to the
       internet then click "Attempt to reconnect."
+    </div>
+    <div class="modal-body" ng-if="multipleClients">
+      Because only one instance of Web Code is allowed at a time, you have been
+      disconnected from the server. If you wish to resume editing from this instance,
+      you must close the other window/tab and click "Attempt to reconnect."
     </div>
     <div class="modal-footer">
       <button class="btn btn-info" type="button" ng-click="reconnectToSocket()">

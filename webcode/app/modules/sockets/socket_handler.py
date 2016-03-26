@@ -3,8 +3,8 @@ from app.modules.event_manager.models import Event
 from flask.sessions import SecureCookieSessionInterface
 import tornado.websocket
 from json import loads
-# import threading
-# import time
+import threading
+import time
 
 
 class SocketHandler(tornado.websocket.WebSocketHandler):
@@ -14,8 +14,8 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
     that are currently connected to the server.
     """
 
-    # Client connection pool
-    clients = []
+    # Client connection dictionary
+    clients = {}
 
     # Callback dictionary for receiving messages
     callbacks = dict()
@@ -62,9 +62,7 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         return wrapped
 
     def open(self):
-        """Add a client to the connection pool"""
-        SocketHandler.clients.append(self)
-        # print(len(SocketHandler.clients), 'client(s)')
+        """Add a client to the connection pool. Only one socket per user is allowed; all others will be closed"""
         try:
             cookie = self.request.cookies['session'].value
             session = SecureCookieSessionInterface().open_session(
@@ -73,13 +71,26 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
             )
             self.username = session['user_id']
             if self.username is not None:
-                Event.log(self.username, 'start')
+                self._check_for_multiple_clients()
+                SocketHandler.clients[self.username].append(self)
         except:
-            pass
+            self.close()
+
+    def _check_for_multiple_clients(self):
+        if self.username in SocketHandler.clients:
+            Event.log(self.username, 'restart')
+            try:
+                SocketHandler.send(SocketHandler.clients[self.username][0], 'multiple_clients', '')
+                SocketHandler.clients[self.username][0].close()
+            except:
+                pass  # well, we tried.
+        else:
+            SocketHandler.clients[self.username] = list()
+            Event.log(self.username, 'start')
 
     def on_close(self):
         """Remove a client from the connection pool"""
-        SocketHandler.clients.remove(self)
+        SocketHandler.clients[self.username].pop(0)
         Event.log(self.username, 'finish')
 
     def on_message(self, message):
@@ -112,25 +123,26 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         }
 
 
-# class ClientWatcherDaemon(threading.Thread):
-#
-#     def __init__(self):
-#         threading.Thread.__init__(self)
-#         self.runners = []
-#
-#     def run(self):
-#         while True:
-#             time.sleep(30)
-#             for client in SocketHandler.clients:
-#                 try:
-#                     client.ping(b'test')
-#                     print('pinging client')
-#                 except tornado.websocket.WebSocketClosedError:
-#                     print('Found dead client')
-#                     SocketHandler.clients.remove(client)
-#
-# daemon = ClientWatcherDaemon()
-# daemon.start()
+class ClientWatcherDaemon(threading.Thread):
+
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.runners = []
+
+    def run(self):
+        while True:
+            time.sleep(30)
+            for username in SocketHandler.clients:
+                for client in SocketHandler.clients[username]:
+                    try:
+                        client.ping(b'test')
+                        print('pinging client')
+                    except tornado.websocket.WebSocketClosedError:
+                        print('Found dead client')
+                        SocketHandler.clients[username].remove(client)
+
+daemon = ClientWatcherDaemon()
+daemon.start()
 
 
 class FakeRequest:

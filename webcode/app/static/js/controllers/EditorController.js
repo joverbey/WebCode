@@ -165,6 +165,12 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
                 console.scrollTop = console.scrollHeight;
             }
         });
+
+        $scope.multipleClients = false;
+        socket.on('multiple_clients', function() {
+            console.log('Found multiple clients, closing this one.');
+            $scope.multipleClients = true;
+        });
     });
 
     $scope.$on('closeSocket', function() {
