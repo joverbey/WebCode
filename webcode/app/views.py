@@ -38,7 +38,7 @@ def log_in():
         if bcrypt.check_password_hash(hashed, password):
             # everything's gucci
             login_user(user)
-            Event.log(username, 'start')
+            Event.log(username, 'login')
             return serve_response({})
     return serve_error('invalid username or password', 401)
 
@@ -46,7 +46,7 @@ def log_in():
 @app.route('/api/logout')
 @login_required
 def log_out():
-    Event.log(current_user.username, 'finish')
+    Event.log(current_user.username, 'logout')
     logout_user()
     return serve_response({})
 

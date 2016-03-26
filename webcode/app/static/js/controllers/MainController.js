@@ -1,5 +1,5 @@
 app.controller('MainController', ['$scope', '$http', '$window', function($scope, $http, $window) {
-    $scope.socket = new Socket('ws://' + $window.location.host + '/websocket');
+    $scope.loggedIn = false;
     $scope.isAdmin = false;
     $scope.isOpen = false;
     $scope.templates = [];
@@ -23,6 +23,23 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
 
     $scope.toggleFileTree = function() {
         $scope.showTree = !$scope.showTree;
+    };
+
+    var connectToSocket = function() {
+        $scope.socket = new Socket('ws://' + $window.location.host + '/websocket');
+        $scope.socket.on('close', function() {
+            $scope.$broadcast('closeSocket');
+        });
+
+        $scope.socket.on('open', function() {
+            $scope.$broadcast('openSocket', $scope.socket);
+        });
+    };
+
+    var disconnectFromSocket = function() {
+        if ($scope.socket) {
+            $scope.socket.close();
+        }
     };
 
     var closeDropdown = function() {
@@ -67,7 +84,7 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
     };
 
     // Make a /api/me request and set the current user
-    $scope.$watch('loggedIn', function(newVal, oldVal) {
+    $scope.$watch('loggedIn', function(newVal) {
         if (newVal) {
             $http.get('/api/me')
                 .then(function(response) {
@@ -76,8 +93,9 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
                     $scope.displayName = response.data.data.displayName;
                     $scope.isAdmin = response.data.data.isAdmin;
                     $scope.loggedIn = true;
+                    connectToSocket();
                 },
-                function(error) {
+                function() {
                     console.log("Error getting current user in MainController");
                 });
             getTemplates();
@@ -148,6 +166,7 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
         }).then(function(response) {
             $scope.loggedIn = true;
             $scope.failedLogin = false;
+            $scope.$broadcast('loggedIn');
             closeDropdown();
         }, function(response) {
             $scope.failedLogin = true;
@@ -157,6 +176,8 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
     $scope.logOut = function() {
         $http.get('/api/logout').then(function(response) {
             $scope.loggedIn = false;
+            $scope.$broadcast('loggedOut');
+            disconnectFromSocket();
         }, function(response) {
             console.log("error");
         });
@@ -168,6 +189,9 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
     };
 
     $scope.logEvent = function(type, details) {
+        if (!$scope.loggedIn) {
+            return;
+        }
         $scope.socket.send('event', {
             type: type,
             username: username,
@@ -177,5 +201,9 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
 
     $scope.$on('isEditing', function(scope, value) {
         $scope.isEditing = !!value;
+    });
+
+    $scope.$on('selectedProject', function(scope, value) {
+        $scope.selectedProject = value;
     });
 }]);

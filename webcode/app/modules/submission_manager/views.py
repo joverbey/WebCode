@@ -76,6 +76,7 @@ def get_submission(job):
                                                   Submission.job == job).first()
     directory = directory_for_submission(job)
     file_name = 'submit' + FILE_EXTENSIONS_FROM_TYPE[submission.type]
+    print(file_name)
     source_file = open(os.path.join(directory, file_name))
     body = source_file.read()
     return serve_response({

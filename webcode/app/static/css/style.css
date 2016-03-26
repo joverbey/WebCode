@@ -326,8 +326,8 @@ column-toolbar {
     position: relative;
 }
 
-.error {
-    color: #9C1A1C;
+.warning {
+    color: #9c4e00;
 }
 
 .text-center-vertical {

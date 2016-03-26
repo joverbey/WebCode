@@ -25,17 +25,28 @@ function Socket(url) {
 
         parent.ws.onmessage = eventHandler;
 
-        parent.ws.onclose = function(event) {
+        parent.ws.onclose = function() {
+            console.log('closed socket');
             if ('close' in parent.events) {
                 parent.events.close({});
             }
         };
 
-        parent.ws.onopen = function(event) {
+        parent.ws.onopen = function() {
+            console.log('opened socket');
             if ('open' in parent.events) {
                 parent.events.open({});
             }
         };
     };
     this.refresh();
+    this.isConnected = function() {
+        return parent.ws.readyState === 1;
+    };
+
+    this.close = function() {
+        if (parent.ws.readyState === 1) {
+            parent.ws.close();
+        }
+    }
 }

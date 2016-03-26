@@ -3,6 +3,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     var inactiveTimer;
     var disconnectedModal;
     var active = false;
+    var socket;
     $scope.saving = false;
     $scope.showConsole = true;
     $scope.status = 'Saving…';
@@ -15,11 +16,18 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     $scope.editor.commands.addCommand({
         name: 'Save',
         bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
-        exec: function(editor) {
+        exec: function() {
             sendSave($scope.selectedProject);
         },
         readOnly: false
     });
+
+    // Lock editor if user is logged out or the socket is disconnected
+    var enableEditor = function() {
+        var isConnectedToSocket = socket && socket.isConnected();
+        $scope.editor.setReadOnly(!$scope.loggedIn || !isConnectedToSocket || !navigator.onLine);
+    };
+    enableEditor();
 
     var resetTimeout = function() {
         active = true;
@@ -126,12 +134,30 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         sendSave(old.projectId);
     });
 
-    $scope.socket.on('close', function(event) {
-        $scope.editor.setReadOnly(true);
+    $scope.$on('openSocket', function(scope, s) {
+        socket = s;
+        enableEditor();
+        if (disconnectedModal) {
+            disconnectedModal.dismiss('open');
+            disconnectedModal = undefined;
+        }
+        socket.on('submit', function(data) {
+            if ($scope.jobs.indexOf(data.job) > -1) {
+                var console = document.getElementById('console');
+                $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput + '<p>' + data.stdout + '</p>' +
+                    '<p class="warning">' + data.stderr + '</p>');
+                $scope.$apply();
+                console.scrollTop = console.scrollHeight;
+            }
+        });
+    });
+
+    $scope.$on('closeSocket', function() {
+        enableEditor();
         if (saveTimer) {
             $interval.cancel(saveTimer);
         }
-        if (disconnectedModal === undefined) {
+        if ($scope.loggedIn && disconnectedModal === undefined) {
             disconnectedModal = $uibModal.open({
                 templateUrl: 'disconnectModal.html',
                 controller: 'DisconnectModalController',
@@ -143,10 +169,14 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         }
     });
 
-    $scope.socket.on('open', function(event) {
-        $scope.editor.setReadOnly(false);
-        disconnectedModal.dismiss('open');
-        disconnectedModal = undefined;
+    $scope.$on('loggedIn', function() {
+        $scope.loggedIn = true;
+        enableEditor();
+    });
+
+    $scope.$on('loggedOut', function() {
+        $scope.loggedIn = false;
+        enableEditor();
     });
 
     var sendSave = function(projectId) {
@@ -159,7 +189,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
             var curPos = $scope.editor.getCursorPosition();
             project.body = newValue;
             project.last_edited = Date.now() / 1000;
-            $scope.socket.send('save', {
+            socket.send('save', {
                 username: $scope.username,
                 project_id: projectId,
                 body: newValue,
@@ -221,16 +251,6 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         });
     };
 
-    $scope.socket.on('submit', function(data) {
-        if ($scope.jobs.indexOf(data.job) > -1) {
-            var console = document.getElementById('console');
-            $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput + '<p>' + data.stdout + '</p>' +
-                '<p class="error">' + data.stderr + '</p>');
-            $scope.$apply();
-            console.scrollTop = console.scrollHeight;
-        }
-    });
-
     $scope.toggleConsole = function() {
         hideConsole($scope.showConsole);
     };
@@ -278,6 +298,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
 
     $scope.selectProject = function(project) {
         $scope.selectedProject = project.project_id;
+        $scope.$emit('selectedProject', project.project_id);
         lockEditor(false);
         hideConsole(false);
         $scope.isEditing = true;
