@@ -123,26 +123,26 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         }
 
 
-class ClientWatcherDaemon(threading.Thread):
-
-    def __init__(self):
-        threading.Thread.__init__(self)
-        self.runners = []
-
-    def run(self):
-        while True:
-            time.sleep(30)
-            for username in SocketHandler.clients:
-                for client in SocketHandler.clients[username]:
-                    try:
-                        client.ping(b'test')
-                        print('pinging client')
-                    except tornado.websocket.WebSocketClosedError:
-                        print('Found dead client')
-                        SocketHandler.clients[username].remove(client)
-
-daemon = ClientWatcherDaemon()
-daemon.start()
+# class ClientWatcherDaemon(threading.Thread):
+#
+#     def __init__(self):
+#         threading.Thread.__init__(self)
+#         self.runners = []
+#
+#     def run(self):
+#         while True:
+#             time.sleep(30)
+#             for username in SocketHandler.clients:
+#                 for client in SocketHandler.clients[username]:
+#                     try:
+#                         client.ping(b'test')
+#                         print('pinging client')
+#                     except tornado.websocket.WebSocketClosedError:
+#                         print('Found dead client')
+#                         SocketHandler.clients[username].remove(client)
+#
+# daemon = ClientWatcherDaemon()
+# daemon.start()
 
 
 class FakeRequest:
