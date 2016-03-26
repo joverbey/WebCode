@@ -3,8 +3,8 @@ from app.modules.event_manager.models import Event
 from flask.sessions import SecureCookieSessionInterface
 import tornado.websocket
 from json import loads
-import threading
-import time
+# import threading
+# import time
 
 
 class SocketHandler(tornado.websocket.WebSocketHandler):

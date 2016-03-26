@@ -206,8 +206,11 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         if (projectId === undefined) {
             projectId = $scope.selectedProject;
         }
+        if (!(projectId in $scope.projects)) {
+            return;
+        }
         var project = $scope.projects[projectId];
-        var newValue= project.editSession.getValue();
+        var newValue = project.editSession.getValue();
         if (newValue !== project.body) {
             var curPos = $scope.editor.getCursorPosition();
             project.body = newValue;
@@ -324,12 +327,23 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     };
 
     $scope.showEditProjectModal = function(project) {
-        $uibModal.open({
+        var editModal = $uibModal.open({
             templateUrl: '/static/html/edit-project.html',
             controller: 'EditProjectModalController',
             size: 'sm',
             scope: $scope,
             resolve: {project: project}
+        });
+
+        editModal.result.then(function(result) {
+            if (!result) {
+                return;
+            }
+            var pid;
+            for (pid in $scope.projects) break;
+            $scope.selectProject($scope.projects[pid]);
+        }, function(reason) {
+
         });
     };
 

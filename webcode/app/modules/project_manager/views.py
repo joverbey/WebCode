@@ -15,6 +15,8 @@ def get_projects():
     projects = session.query(Project).filter(Project.username == current_user.username).all()
     ret = dict()
     for project in projects:
+        if project.hide > 0:
+            continue
         ret[repr(project.project_id)] = project.to_dict()
     return serve_response({
         'selected': repr(projects[0].project_id) if len(projects) > 0 else -1,
@@ -34,7 +36,8 @@ def create_project():
                 type=request.form['type'],
                 title=request.form['title'],
                 last_edited=int(time.time()),
-                template_id=int(request.form['template_id'])
+                template_id=int(request.form['template_id']),
+                hide=0
         )
     except KeyError as error:
         return serve_error('Form field not found: ' + error[0])
@@ -47,8 +50,12 @@ def create_project():
 @login_required
 def edit_project(project_id):
     project = session.query(Project).filter(Project.project_id == project_id).first()
-    project.title = request.form['title']
-    project.type = request.form['type']
+    if 'title' in request.form:
+        project.title = request.form['title']
+    if 'type' in request.form:
+        project.type = request.form['type']
+    if 'delete' in request.form:
+        project.hide = int(request.form['delete'])
 
     project.commit_to_session()
     return serve_response(project.to_dict())

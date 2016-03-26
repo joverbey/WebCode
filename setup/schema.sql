@@ -29,7 +29,7 @@ CREATE TABLE `events` (
   `details` varchar(255) DEFAULT NULL,
   `event_id` int(11) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`event_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=354 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=984 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -49,6 +49,7 @@ CREATE TABLE `projects` (
   `template_id` int(10) NOT NULL,
   `project_id` int(10) NOT NULL AUTO_INCREMENT,
   `title` varchar(30) NOT NULL,
+  `hide` int(1) NOT NULL,
   PRIMARY KEY (`project_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -70,7 +71,7 @@ CREATE TABLE `submissions` (
   `exit_code` int(11) DEFAULT NULL,
   `result` varchar(16) DEFAULT NULL,
   PRIMARY KEY (`job`)
-) ENGINE=InnoDB AUTO_INCREMENT=321 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=325 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -117,4 +118,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-03-24 16:21:44
+-- Dump completed on 2016-03-26 15:34:20

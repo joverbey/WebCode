@@ -1,4 +1,4 @@
-app.controller('EditProjectModalController', ['$scope', '$http', 'project', function($scope, $http, project) {
+app.controller('EditProjectModalController', ['$scope', '$http', 'project', '$uibModal', function($scope, $http, project, $uibModal) {
     if (typeof project === 'undefined') {
         $scope.$close();
     } else {
@@ -12,6 +12,41 @@ app.controller('EditProjectModalController', ['$scope', '$http', 'project', func
             project_id: project.project_id
         };
     }
+
+    $scope.deleteProject = function() {
+        var deleteModal = $uibModal.open({
+            templateUrl: '/static/html/delete-modal.html',
+            controller: 'DeleteModalController',
+            size: 'sm',
+            scope: $scope,
+            backdrop: 'static',
+            keyboard: false
+        });
+
+        deleteModal.result.then(function(result) {
+            if (!result) {
+                return;
+            }
+            var fd = new FormData();
+            fd.append('delete', 1);
+            $http({
+                method: 'PUT',
+                url: 'api/projects/' + $scope.project.project_id,
+                headers: {'Content-type': undefined},
+                transformRequest: angular.identity,
+                data: fd
+            }).then(function(response) {
+                var project = response.data.data;
+                delete $scope.projects[project.project_id];
+                $scope.$close('delete');
+            }, function(error) {
+                console.log('Error deleting project');
+                console.log(error.data.status + ': ' + error.data.error);
+            });
+        }, function(reason) {
+
+        });
+    };
 
     $scope.createNewProject = function() {
         var fd = new FormData();
