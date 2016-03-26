@@ -255,32 +255,6 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         hideConsole($scope.showConsole);
     };
 
-    $scope.showSubmission = function(submission) {
-        if ($scope.isEditing) {
-            sendSave();
-        }
-        lockEditor(true);
-        hideConsole(true);
-        $scope.isEditing = false;
-        $scope.showBanner = true;
-        $scope.isShowingTemplate = false;
-        var editSession = ace.createEditSession('', $scope.EDIT_SESSION_TYPES[submission.type]);
-        $scope.status = 'Loading Submission #' + submission.job + '...';
-        $scope.editor.setSession(editSession);
-        $scope.submission = submission;
-
-        $http.get('/api/submissions/' + submission.job)
-            .then(function(response) {
-                    submission.body = response.data.data.body;
-                    $scope.status = 'Viewing Submission #' + submission.job + ' (Read only)';
-                    editSession.setValue(submission.body);
-                },
-                function(error) {
-                    console.log(error);
-                });
-        $scope.logEvent('showprev', submission.job);
-    };
-
     $scope.showTemplate = function(template) {
         if ($scope.isEditing) {
             sendSave();
@@ -324,10 +298,6 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
 
     $scope.toggleShowTemplates = function() {
         $scope.showTemplates = !$scope.showTemplates;
-    };
-
-    $scope.toggleShowSubmissions = function() {
-        $scope.showSubmits = !$scope.showSubmits;
     };
 
     $scope.showEditProjectModal = function(project) {

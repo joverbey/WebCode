@@ -32,17 +32,6 @@
               {{ template.title }}
             </li>
           </ul>
-          <div class="folder-header" ng-init="showSubmits = false"
-               ng-click="toggleShowSubmissions()">
-            <span class="glyphicon text-center-vertical" ng-class="showSubmits ? 'glyphicon-menu-down' : 'glyphicon-menu-right'">
-            </span>
-            Previous Submissions
-          </div>
-          <ul class="project-list" ng-show="showSubmits">
-            <li class="project-list-item" ng-repeat="submission in submissions" ng-click="showSubmission(submission)">
-              {{ submission.job }}
-            </li>
-          </ul>
         </div>
       </div>
     </div>
