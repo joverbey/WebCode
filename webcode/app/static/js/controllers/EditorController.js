@@ -134,13 +134,28 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         sendSave(old.projectId);
     });
 
-    $scope.$on('openSocket', function(scope, s) {
-        socket = s;
-        enableEditor();
-        if (disconnectedModal) {
+    var hideDisconnectedModal = function() {
+        if (navigator.onLine && disconnectedModal) {
             disconnectedModal.dismiss('open');
             disconnectedModal = undefined;
         }
+    };
+
+    var showDisconnectedModal = function() {
+        disconnectedModal = $uibModal.open({
+            templateUrl: 'disconnectModal.html',
+            controller: 'DisconnectModalController',
+            size: 'sm',
+            scope: $scope,
+            backdrop: 'static',
+            keyboard: false
+        });
+    };
+
+    $scope.$on('openSocket', function(scope, s) {
+        socket = s;
+        enableEditor();
+        hideDisconnectedModal();
         socket.on('submit', function(data) {
             if ($scope.jobs.indexOf(data.job) > -1) {
                 var console = document.getElementById('console');
@@ -158,14 +173,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
             $interval.cancel(saveTimer);
         }
         if ($scope.loggedIn && disconnectedModal === undefined) {
-            disconnectedModal = $uibModal.open({
-                templateUrl: 'disconnectModal.html',
-                controller: 'DisconnectModalController',
-                size: 'sm',
-                scope: $scope,
-                backdrop: 'static',
-                keyboard: false
-            });
+            showDisconnectedModal();
         }
     });
 
@@ -177,6 +185,15 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     $scope.$on('loggedOut', function() {
         $scope.loggedIn = false;
         enableEditor();
+    });
+
+    $scope.$on('onlineChange', function(scope, isOnline) {
+        console.log('got online change', isOnline);
+        if (isOnline) {
+            hideDisconnectedModal();
+        } else {
+            showDisconnectedModal();
+        }
     });
 
     var sendSave = function(projectId) {

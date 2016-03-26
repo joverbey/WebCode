@@ -188,7 +188,8 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
     };
 
     $scope.logEvent = function(type, details) {
-        if (!$scope.loggedIn) {
+        if (!$scope.loggedIn || !$scope.socket) {
+            console.error('Could not log event:', type, details);
             return;
         }
         $scope.socket.send('event', {
@@ -204,5 +205,15 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
 
     $scope.$on('selectedProject', function(scope, value) {
         $scope.selectedProject = value;
+    });
+
+    window.addEventListener('online', function() {
+        console.log('online');
+        $scope.$broadcast('onlineChange', true);
+        $scope.reconnectToSocket();
+    });
+    window.addEventListener('offline', function() {
+        console.log('offline');
+        $scope.$broadcast('onlineChange', false);
     });
 }]);

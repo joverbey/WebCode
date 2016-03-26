@@ -3,6 +3,8 @@ from app.modules.event_manager.models import Event
 from flask.sessions import SecureCookieSessionInterface
 import tornado.websocket
 from json import loads
+# import threading
+# import time
 
 
 class SocketHandler(tornado.websocket.WebSocketHandler):
@@ -62,6 +64,7 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         """Add a client to the connection pool"""
         SocketHandler.clients.append(self)
+        # print(len(SocketHandler.clients), 'client(s)')
         try:
             cookie = self.request.cookies['session'].value
             session = SecureCookieSessionInterface().open_session(
@@ -107,6 +110,27 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
             'eventType': event,
             'data': data
         }
+
+
+# class ClientWatcherDaemon(threading.Thread):
+#
+#     def __init__(self):
+#         threading.Thread.__init__(self)
+#         self.runners = []
+#
+#     def run(self):
+#         while True:
+#             time.sleep(30)
+#             for client in SocketHandler.clients:
+#                 try:
+#                     client.ping(b'test')
+#                     print('pinging client')
+#                 except tornado.websocket.WebSocketClosedError:
+#                     print('Found dead client')
+#                     SocketHandler.clients.remove(client)
+#
+# daemon = ClientWatcherDaemon()
+# daemon.start()
 
 
 class FakeRequest:

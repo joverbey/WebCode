@@ -26,14 +26,12 @@ function Socket(url) {
         parent.ws.onmessage = eventHandler;
 
         parent.ws.onclose = function() {
-            console.log('closed socket');
             if ('close' in parent.events) {
                 parent.events.close({});
             }
         };
 
         parent.ws.onopen = function() {
-            console.log('opened socket');
             if ('open' in parent.events) {
                 parent.events.open({});
             }
