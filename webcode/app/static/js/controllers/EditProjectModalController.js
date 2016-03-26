@@ -48,7 +48,7 @@ app.controller('EditProjectModalController', ['$scope', '$http', 'project', '$ui
         });
     };
 
-    $scope.createNewProject = function() {
+    $scope.editProject = function() {
         var fd = new FormData();
         fd.append('type', $scope.project.type);
         fd.append('title', $scope.project.title);

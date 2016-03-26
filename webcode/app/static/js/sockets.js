@@ -8,7 +8,6 @@ function Socket(url) {
 
     var eventHandler = function(event) {
         var data = JSON.parse(event.data);
-        console.log(event);
         if (data.eventType in parent.events) {
             parent.events[data.eventType](data.data);
         }

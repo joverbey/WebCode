@@ -216,4 +216,10 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
         console.log('offline');
         $scope.$broadcast('onlineChange', false);
     });
+
+    $scope.$on('requestSocket', function() {
+        if ($scope.socket) {
+            $scope.$broadcast('openSocket', $scope.socket);
+        }
+    })
 }]);

@@ -4,6 +4,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     var disconnectedModal;
     var active = false;
     var socket;
+    var job = -1;
     $scope.saving = false;
     $scope.showConsole = true;
     $scope.status = 'Saving…';
@@ -67,6 +68,10 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         o.session.on('changeScrollLeft', resetTimeout);
     });
 
+    $scope.$on('scrollConsole', function() {
+        resetTimeout();
+    });
+
 
     var createToolbars = function() {
         var element = document.getElementById('resize-bar-row');
@@ -118,13 +123,14 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         if (args.height) {
             resizeEditor();
         }
+        resetTimeout();
     });
 
     $scope.$on('execute', function(metadata, run) {
         execute(run);
     });
 
-    $scope.editor.on('change', function(e) {
+    $scope.editor.on('change', function() {
         $scope.saving = true;
         $scope.$apply();
         resetTimer();
@@ -152,15 +158,36 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         });
     };
 
+    var generateStdOut = function(stdout) {
+        var lines = stdout.split('\n');
+        var output = '';
+        for (var i = 0; i < lines.length; i++) {
+            output += '<p>' + lines[i] + '</p>';
+        }
+        return output;
+    };
+
+    var generateStdErr = function(stderr) {
+        var lines = stderr.split('\n');
+        var output = '';
+        for (var i = 0; i < lines.length; i++) {
+            output += '<p class="warning">' + lines[i] + '</p>';
+        }
+        return output;
+    };
+
     $scope.$on('openSocket', function(scope, s) {
         socket = s;
         enableEditor();
         hideDisconnectedModal();
         socket.on('submit', function(data) {
             if ($scope.jobs.indexOf(data.job) > -1) {
+                if (data.job !== job) {
+                    job = data.job;
+                    $scope.consoleOutput = '';
+                }
                 var console = document.getElementById('console');
-                $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput + '<p>' + data.stdout + '</p>' +
-                    '<p class="warning">' + data.stderr + '</p>');
+                $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput + generateStdOut(data.stdout) + generateStdErr(data.stderr));
                 $scope.$apply();
                 console.scrollTop = console.scrollHeight;
             }
@@ -168,7 +195,6 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
 
         $scope.multipleClients = false;
         socket.on('multiple_clients', function() {
-            console.log('Found multiple clients, closing this one.');
             $scope.multipleClients = true;
         });
     });
@@ -350,4 +376,8 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     $scope.$watch('isEditing', function(newValue) {
         $scope.$emit('isEditing', newValue);
     });
+
+    if (!socket) {
+        $scope.$emit('requestSocket');
+    }
 }]);

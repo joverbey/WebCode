@@ -39,6 +39,17 @@ app.directive('columnToolbar', function() {
     };
 });
 
+app.directive('scrollLogger', function () {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            element.bind('scroll', function () {
+                scope.$emit('scrollConsole');
+            });
+        }
+    };
+});
+
 app.filter('iif', function () {
     return function(input, trueValue, falseValue) {
         return input ? trueValue : falseValue;

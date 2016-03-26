@@ -34,7 +34,7 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         :return: None
         """
         for client in cls.clients:
-            client.write_message(SocketHandler._message(event_type, data))
+            SocketHandler.clients[client][0].write_message(SocketHandler._message(event_type, data))
 
     @classmethod
     def send(cls, conn, event_type, data):

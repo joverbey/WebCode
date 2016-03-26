@@ -49,7 +49,7 @@
     </div>
     <div ng-show="showConsole && isEditing" class="row-resize console-bg" style="flex-basis: 200px" resizable r-directions="['top']" r-flex="true" r-no-throttle
          r-grabber="<div id='resize-bar-row'></div>">
-      <div id="console" class="console-container">
+      <div id="console" class="console-container" scroll-logger>
         <div class="console" ng-bind-html="consoleOutput"></div>
       </div>
     </div>

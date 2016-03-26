@@ -118,6 +118,11 @@ body {
     border-width: 0;
     bottom: 0;
     flex: 1;
+    margin: 5px;
+}
+
+.console > p {
+    margin: 0;
 }
 
 .row-padding {
