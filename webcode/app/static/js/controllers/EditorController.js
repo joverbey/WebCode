@@ -11,6 +11,8 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     $scope.template = {};
     $scope.jobs = [];
     $scope.consoleOutput = '';
+    $scope.queuePosition = 0;
+    $scope.waitingOnJob = false;
 
     $scope.editor = ace.edit(document.getElementById('editor'));
     $scope.editor.setTheme('ace/theme/twilight');
@@ -114,6 +116,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
             data: fd
         }).then(function(response) {
             $scope.jobs.push(response.data.data.job);
+            $scope.waitingOnJob = true;
         }, function(error) {
             console.error(error.data.status + ': ' + error.data.error);
         });
@@ -186,11 +189,32 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
                     job = data.job;
                     $scope.consoleOutput = '';
                 }
-                var console = document.getElementById('console');
-                $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput + generateStdOut(data.stdout) + generateStdErr(data.stderr));
-                $scope.$apply();
-                console.scrollTop = console.scrollHeight;
+                if (data.part === 'start') {
+                    $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput +
+                        '<p class="console-text">Starting compilation...</p>')
+                } else {
+                    $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput +
+                        generateStdOut(data.stdout) + generateStdErr(data.stderr));
+                    if (data.part === 'compile') {
+                        $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput +
+                            '<p class="console-text">Compilation finished with exit code ' + data.exit_code + '</p>');
+                        if (data.exit_code === 0) {
+                            $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput +
+                                '<p class="console-text">Starting execution...</p>');
+                        } else {
+                            $scope.waitingOnJob = false;
+                        }
+                    } else {
+                        $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput +
+                            '<p class="console-text">Execution finished with exit code ' + data.exit_code + '</p>');
+                        $scope.waitingOnJob = false;
+                    }
+                }
+                var consoleElement = document.getElementById('console');
+                consoleElement.scrollTop = console.scrollHeight;
             }
+            $scope.queuePosition = data.queue_position;
+            $scope.$apply();
         });
 
         $scope.multipleClients = false;

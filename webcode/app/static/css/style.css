@@ -361,3 +361,7 @@ column-toolbar {
     margin: -5px;
     padding: 5px;
 }
+
+.console-text {
+    color: #888;
+}

@@ -3,8 +3,8 @@ from app.modules.event_manager.models import Event
 from flask.sessions import SecureCookieSessionInterface
 import tornado.websocket
 from json import loads
-# import threading
-# import time
+import threading
+import time
 
 
 class SocketHandler(tornado.websocket.WebSocketHandler):
@@ -23,6 +23,7 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
     def __init__(self, *args, **kwargs):
         tornado.websocket.WebSocketHandler.__init__(self, *args, **kwargs)
         self.username = None
+        self.kill = False
 
     @classmethod
     def emit(cls, event_type, data):
@@ -111,6 +112,9 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
             app.logger.error('Could not parse JSON from socket message: ' +
                              message)
 
+    def on_pong(self, data):
+        self.kill = False
+
     def data_received(self, data):
         pass
 
@@ -123,26 +127,30 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         }
 
 
-# class ClientWatcherDaemon(threading.Thread):
-#
-#     def __init__(self):
-#         threading.Thread.__init__(self)
-#         self.runners = []
-#
-#     def run(self):
-#         while True:
-#             time.sleep(30)
-#             for username in SocketHandler.clients:
-#                 for client in SocketHandler.clients[username]:
-#                     try:
-#                         client.ping(b'test')
-#                         print('pinging client')
-#                     except tornado.websocket.WebSocketClosedError:
-#                         print('Found dead client')
-#                         SocketHandler.clients[username].remove(client)
-#
-# daemon = ClientWatcherDaemon()
-# daemon.start()
+class ClientWatcherDaemon(threading.Thread):
+
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.runners = []
+
+    def run(self):
+        while True:
+            time.sleep(15)
+            for username in SocketHandler.clients:
+                for client in SocketHandler.clients[username]:
+                    try:
+                        if client.kill:
+                            Event.log(username, 'finish', 'lost connection')
+                            client.close()
+                            SocketHandler.clients[username].remove(client)
+                            continue
+                        client.ping(b'test')
+                        client.kill = True
+                    except tornado.websocket.WebSocketClosedError:
+                        SocketHandler.clients[username].remove(client)
+
+daemon = ClientWatcherDaemon()
+daemon.start()
 
 
 class FakeRequest:

@@ -37,6 +37,7 @@ TIME_LIMIT = 120
 OUT_FILE_NAME = 'out.txt'
 ERR_FILE_NAME = 'error.txt'
 
+START_PART = 'start'
 COMPILE_PART = 'compile'
 EXECUTE_PART = 'execute'
 
@@ -62,7 +63,21 @@ class RunnerQueueThread(threading.Thread):
                 runner.run()
 
     def add(self, runner):
+        username = runner.submission.username
+        for run in self.runners:
+            print('username:', run.submission.username)
+            if run.submission.username == username:
+                self.runners.remove(run)
+                print('canceling run', run.submission.job)
+
         self.runners.append(runner)
+
+    def my_position(self, username):
+        position = 0
+        for run in self.runners:
+            if run.submission.username != username:
+                position += 0
+        return position
 
 
 class Runner:
@@ -100,6 +115,7 @@ class Runner:
 
         :return: one of the status constants representing the success
         """
+        self._emit_start()
         status, result_code = self._compile_submission()
         self._update_status(status, COMPILE_PART, result_code)
 
@@ -110,6 +126,13 @@ class Runner:
             max_time = -1
 
         return status, max_time
+
+    def _emit_start(self):
+        SocketHandler.emit('submit', {
+            'job': self.submission.job,
+            'part': START_PART,
+            'queue_position': self.runner_thread.my_position(self.submission.username)
+        })
 
     def _update_status(self, status, part, exit_code):
         """Updates the status of the submission and notifies the clients that
@@ -126,7 +149,8 @@ class Runner:
                 'part': part,
                 'stderr': self._sanitize_output(stderr),
                 'stdout': self._sanitize_output(stdout),
-                'exit_code': exit_code
+                'exit_code': exit_code,
+                'queue_position': self.runner_thread.my_position(self.submission.username)
             })
         except:
             SocketHandler.emit('submit', {
