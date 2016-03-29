@@ -32,11 +32,12 @@ COMPILATION_SUCCESS = 2
 RUNTIME_ERROR = 3
 TIMELIMIT_EXCEEDED = 4
 
-TIME_LIMIT = 120
+TIME_LIMIT = 45
 
 OUT_FILE_NAME = 'out.txt'
 ERR_FILE_NAME = 'error.txt'
 
+CANCEL_PART = 'cancel'
 START_PART = 'start'
 COMPILE_PART = 'compile'
 EXECUTE_PART = 'execute'
@@ -65,10 +66,9 @@ class RunnerQueueThread(threading.Thread):
     def add(self, runner):
         username = runner.submission.username
         for run in self.runners:
-            print('username:', run.submission.username)
             if run.submission.username == username:
                 self.runners.remove(run)
-                print('canceling run', run.submission.job)
+                run.cancel(len(self.runners))
 
         self.runners.append(runner)
 
@@ -126,6 +126,15 @@ class Runner:
             max_time = -1
 
         return status, max_time
+
+    def cancel(self, queue_ahead):
+        self.submission.update_status(-1, 'cancel')
+        self.submission.commit_to_session()
+        SocketHandler.emit('submit', {
+            'job': self.submission.job,
+            'part': CANCEL_PART,
+            'queue_position': queue_ahead
+        })
 
     def _emit_start(self):
         SocketHandler.emit('submit', {
