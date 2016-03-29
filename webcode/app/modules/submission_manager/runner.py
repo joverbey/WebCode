@@ -120,7 +120,7 @@ class Runner:
         self._update_status(status, COMPILE_PART, result_code)
 
         if status == COMPILATION_SUCCESS and self.submission.run == 1:
-            status, max_time = self._execute_submission()
+            status, max_time, result_code = self._execute_submission()
             self._update_status(status, EXECUTE_PART, result_code)
         else:
             max_time = -1
@@ -211,7 +211,7 @@ class Runner:
         except subprocess.TimeoutExpired:
             # If the process times out, then we will kill it outselves
             process.kill()
-            return TIMELIMIT_EXCEEDED, TIME_LIMIT
+            return TIMELIMIT_EXCEEDED, TIME_LIMIT, process.returncode
 
         end_time = time.time()
         total_time = end_time - start_time
@@ -219,10 +219,10 @@ class Runner:
         if process.poll() != 0:
             # If the process's exit code was nonzero, then it had a
             # runtime error.
-            return RUNTIME_ERROR, total_time
+            return RUNTIME_ERROR, total_time, process.returncode
 
         # The answer is correct if all the tests complete without any failure.
-        return NO_ERRORS, total_time
+        return NO_ERRORS, total_time, process.returncode
 
     def _create_process(self):
         """Run the program as a subprocess.
