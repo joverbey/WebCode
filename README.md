@@ -23,3 +23,11 @@
 - [ ] We might have the user's code output a SVG image (we can use a fixed filename, like output.svg) -- if the code outputs this file, display the image along with the output
 - [ ] For OpenACC projects, provide an option to compile and run /without/ OpenACC enabled (i.e., without -ta=nvidia)
 
+## Notes
+
+By default, MySQL connections time out after a short period of time.  This needs to be changed.  In /etc/my.cnf:
+```
+[mysqld]
+wait_timeout = 31536000
+interactive_timeout = 31536000
+```
