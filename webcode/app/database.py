@@ -1,13 +1,14 @@
 """Database handlers."""
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.automap import automap_base
 
 # Create global database variables
 Base = automap_base()
 engine = create_engine('mysql+pymysql://root@localhost/webcode?charset=utf8')
-connection = engine.connect()
-session = Session(engine)
+Session = sessionmaker()
+Session.configure(bind=engine)
+session = Session()
 
 # Import all the ORM classes
 # TODO: make ORM classes
