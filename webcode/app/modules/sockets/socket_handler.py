@@ -28,7 +28,8 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
     @classmethod
     def remove_client(cls, client, in_loop=False):
         username = client.username
-        cls.clients[username].remove(client)
+        if client in cls.clients[username]:
+            cls.clients[username].remove(client)
         if not in_loop and len(cls.clients[username]) == 0:
             cls.clients.pop(username, None)
             return 0
