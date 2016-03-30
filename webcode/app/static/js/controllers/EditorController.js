@@ -198,7 +198,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
                     if (data.part === 'compile') {
                         $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput +
                             '<p class="console-text">Compilation finished with exit code ' + data.exit_code + '</p>');
-                        if (data.exit_code === 0) {
+                        if (data.will_execute) {
                             $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput +
                                 '<p class="console-text">Starting execution...</p>');
                         } else {

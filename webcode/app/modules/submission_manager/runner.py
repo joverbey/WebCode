@@ -159,6 +159,7 @@ class Runner:
                 'stderr': self._sanitize_output(stderr),
                 'stdout': self._sanitize_output(stdout),
                 'exit_code': exit_code,
+                'will_execute': self.submission.run == 1 and exit_code == 0,
                 'queue_position': self.runner_thread.my_position(self.submission.username)
             })
         except:

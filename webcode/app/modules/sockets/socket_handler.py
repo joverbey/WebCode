@@ -26,11 +26,13 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         self.kill = False
 
     @classmethod
-    def remove_client(cls, client):
+    def remove_client(cls, client, in_loop=False):
         username = client.username
         cls.clients[username].remove(client)
-        if len(cls.clients[username]) == 0:
+        if not in_loop and len(cls.clients[username]) == 0:
             cls.clients.pop(username, None)
+            return 0
+        return len(cls.clients[username])
 
     @classmethod
     def emit(cls, event_type, data):
@@ -143,18 +145,24 @@ class ClientWatcherDaemon(threading.Thread):
     def run(self):
         while True:
             time.sleep(15)
+            to_remove = list()
             for username in SocketHandler.clients:
                 for client in SocketHandler.clients[username]:
                     try:
                         if client.kill:
                             Event.log(username, 'finish', 'lost connection')
                             client.close()
-                            SocketHandler.remove_client(client)
+                            if SocketHandler.remove_client(client, True) == 1:
+                                to_remove.append(client.username)
                             continue
                         client.ping(b'test')
                         client.kill = True
                     except tornado.websocket.WebSocketClosedError:
-                        SocketHandler.remove_client(client)
+                        if SocketHandler.remove_client(client, True) == 1:
+                            to_remove.append(client.username)
+            for username in to_remove:
+                SocketHandler.clients.pop(username, None)
+
 
 daemon = ClientWatcherDaemon()
 daemon.start()
