@@ -9,16 +9,18 @@ from app import app
 from app.modules.sockets.socket_handler import SocketHandler
 
 
-ALLOWED_EXTENSIONS = ['java', 'c']
+ALLOWED_EXTENSIONS = ['c']
 COMPILE_COMMAND = {
     # 'oacc': 'gcc {0}.c -o {0}',
     # 'cuda': 'gcc {0}.c -o {0}',
-    'oacc': 'pgcc -ta=nvidia -Minfo=accel -o {0} {0}.c',
+    'oacc': 'pgcc -Bstatic_pgi -ta=nvidia -Minfo=accel -o {0} {0}.c',
     'cuda': 'nvcc -Xcompiler=-fopenmp -o {0} {0}.cu'
 }
 RUN_COMMAND = {
-    'oacc': '{0}/{1}',
-    'cuda': '{0}/{1}'
+    # 'oacc': '{0}/{1}',
+    # 'cuda': '{0}/{1}',
+    'oacc': 'nvidia-docker run --rm -v {0}/{1}:/webcode nvidia/cuda /webcode/{1}',
+    'cuda': 'nvidia-docker run --rm -v {0}/{1}:/webcode nvidia/cuda /webcode/{1}'
 }
 FILE_EXTENSIONS_FROM_TYPE = {
     'cuda': '.cu',
