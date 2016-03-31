@@ -2,10 +2,11 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.automap import automap_base
+from app import app
 
 # Create global database variables
 Base = automap_base()
-engine = create_engine('mysql+pymysql://root@localhost/webcode?charset=utf8')
+engine = create_engine('mysql+pymysql://root:' + app.config['PASSWORD'] + '@localhost/webcode?charset=utf8')
 Session = sessionmaker()
 Session.configure(bind=engine)
 session = Session()
