@@ -13,15 +13,16 @@ ALLOWED_EXTENSIONS = ['c']
 COMPILE_COMMAND = {
     # 'oacc': 'gcc {0}.c -o {0}',
     # 'cuda': 'gcc {0}.c -o {0}',
-    # 'oacc': 'pgcc -Bstatic_pgi -ta=nvidia -Minfo=accel -o {0} {0}.c',
     'oacc': 'pgcc -ta=nvidia -Minfo=accel -o {0} {0}.c',
     'cuda': 'nvcc -Xcompiler=-fopenmp -o {0} {0}.cu'
 }
 RUN_COMMAND = {
-    'oacc': 'run_as_nobody {0}/{1}',
-    'cuda': 'run_as_nobody {0}/{1}',
-    # 'oacc': 'nvidia-docker run --rm -v {0}/{1}:/webcode nvidia/cuda /webcode/{1}',
-    # 'cuda': 'nvidia-docker run --rm -v {0}/{1}:/webcode nvidia/cuda /webcode/{1}'
+    # 'oacc': '{0}/{1}',
+    # 'cuda': '{0}/{1}',
+    # 'oacc': 'run_as_nobody {0}/{1}',
+    # 'cuda': 'run_as_nobody {0}/{1}',
+    'oacc': 'nvidia-docker run --rm -v /opt/pgi/linux86-64/16.1/lib:/opt/pgi/linux86-64/16.1/lib -v /lib:/lib -v /lib64:/lib64 -v {0}:/webcode nvidia/cuda /webcode/{1}',
+    'cuda': 'nvidia-docker run --rm -v {0}:/webcode nvidia/cuda /webcode/{1}'
 }
 FILE_EXTENSIONS_FROM_TYPE = {
     'cuda': '.cu',
