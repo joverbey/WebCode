@@ -13,7 +13,8 @@ ALLOWED_EXTENSIONS = ['c']
 COMPILE_COMMAND = {
     # 'oacc': 'gcc {0}.c -o {0}',
     # 'cuda': 'gcc {0}.c -o {0}',
-    'oacc': 'pgcc -Bstatic_pgi -ta=nvidia -Minfo=accel -o {0} {0}.c',
+    # 'oacc': 'pgcc -Bstatic_pgi -ta=nvidia -Minfo=accel -o {0} {0}.c',
+    'oacc': 'pgcc -ta=nvidia -Minfo=accel -o {0} {0}.c',
     'cuda': 'nvcc -Xcompiler=-fopenmp -o {0} {0}.cu'
 }
 RUN_COMMAND = {
