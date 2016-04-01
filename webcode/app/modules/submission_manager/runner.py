@@ -17,10 +17,10 @@ COMPILE_COMMAND = {
     'cuda': 'nvcc -Xcompiler=-fopenmp -o {0} {0}.cu'
 }
 RUN_COMMAND = {
-    # 'oacc': '{0}/{1}',
-    # 'cuda': '{0}/{1}',
-    'oacc': 'nvidia-docker run --rm -v {0}/{1}:/webcode nvidia/cuda /webcode/{1}',
-    'cuda': 'nvidia-docker run --rm -v {0}/{1}:/webcode nvidia/cuda /webcode/{1}'
+    'oacc': 'run_as_nobody {0}/{1}',
+    'cuda': 'run_as_nobody {0}/{1}',
+    # 'oacc': 'nvidia-docker run --rm -v {0}/{1}:/webcode nvidia/cuda /webcode/{1}',
+    # 'cuda': 'nvidia-docker run --rm -v {0}/{1}:/webcode nvidia/cuda /webcode/{1}'
 }
 FILE_EXTENSIONS_FROM_TYPE = {
     'cuda': '.cu',
