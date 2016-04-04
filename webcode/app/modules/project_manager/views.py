@@ -46,6 +46,13 @@ def create_project():
     return serve_response(project.to_dict())
 
 
+@app.route('/api/projects/<int:project_id>', methods=['GET'])
+@login_required
+def download_project(project_id):
+    project = session.query(Project).filter(Project.project_id == project_id).first()
+    return project.body.replace('\n', '\r\n'), 200
+
+
 @app.route('/api/projects/<int:project_id>', methods=['PUT'])
 @login_required
 def edit_project(project_id):

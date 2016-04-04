@@ -265,6 +265,11 @@ body {
 
 .project-list > li:hover > .edit-project {
     color: white;
+    margin-right: 5px;
+}
+
+.project-list > li:hover > a > .edit-project {
+    color: white;
 }
 
 .selected-project {

@@ -10,10 +10,14 @@
             Projects
           </div>
           <ul class="project-list" ng-show="showProjects">
-            <li class="project-list-item" ng-repeat="project in projects"
+            <li class="project-list-item" ng-repeat="project in projects" style="display: block"
                 ng-class="{'selected-project': selectedProject == project.project_id}" ng-click="selectProject(project)">
               {{ project.title }}
 
+              <a class="edit-project" target="_self" ng-href="/api/projects/{{ project.project_id }}"
+                 download="{{ project.title }}">
+                <span class="edit-project glyphicon glyphicon-download-alt"></span>
+              </a>
               <span class="edit-project glyphicon glyphicon-pencil" ng-click="showEditProjectModal(project)"></span>
             </li>
             <li class="project-list-item" ng-click="showCreateProjectModal()">
