@@ -3,7 +3,7 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
     $scope.isAdmin = false;
     $scope.isOpen = false;
     $scope.templates = [];
-    $scope.projects = [];
+    $scope.projects = {};
     $scope.showTree = true;
     $scope.isEditing = true;
     $scope.prefs = { // have some defaults in case the preferences haven't loaded yet

@@ -25,6 +25,14 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         },
         readOnly: false
     });
+    $scope.editor.commands.addCommand({
+        name: 'Run',
+        bindKey: {win: 'Ctrl-R',  mac: 'Command-R'},
+        exec: function() {
+            execute(1);
+        },
+        readOnly: false
+    });
 
     // Lock editor if user is logged out or the socket is disconnected
     var enableEditor = function() {
@@ -414,5 +422,5 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     $scope.$watch('prefs.fontSize', function(newFontSize) {
         $scope.editor.setFontSize(newFontSize);
         $scope.updatePreferences();
-    })
+    });
 }]);

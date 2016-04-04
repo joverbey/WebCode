@@ -57,7 +57,7 @@
             <!-- If the user is logged in, show their options -->
             <ul ng-if="loggedIn" class="dropdown-menu extra-wide-dropdown" ng-click="$event.stopPropagation()" uib-dropdown-menu>
               <li><a ng-click="logOut()" href="">Sign out</a></li>
-              <li class="something" ng-init="prefs.fontSize=12" class="dropdown-pad">Font size
+              <li class="dropdown-item" ng-init="prefs.fontSize=12" class="dropdown-pad">Font size
                 <button class="btn btn-default btn-sm" ng-click="decreaseFontSize()"><span class="glyphicon glyphicon-chevron-left"></span></button>
                 {% raw %}{{ prefs.fontSize }}{% endraw %}
                 <button class="btn btn-default btn-sm" ng-click="increaseFontSize()"><span class="glyphicon glyphicon-chevron-right"></span></button>
