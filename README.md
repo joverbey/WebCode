@@ -23,11 +23,45 @@
 - [ ] We might have the user's code output a SVG image (we can use a fixed filename, like output.svg) -- if the code outputs this file, display the image along with the output
 - [ ] For OpenACC projects, provide an option to compile and run /without/ OpenACC enabled (i.e., without -ta=nvidia)
 
-## Notes
+## Post-Release Bug Fixes/Feature Additions
+- [x] Allow user to change theme/font size (student suggestion)
+- [x] Add button to download source code as .c/.cu file (student suggestion)
+- [x] Bind key to run?  Ctrl+R
+- [ ] Automatically switch to project after closing the Create dialog
+- [ ] Show list of control keys somewhere - Ctrl+L, Ctrl+F (twice to replace), Ctrl+R
+- [ ] Integrate refactorings (CLI) into WebCode
+- [ ] Code cleanup
 
-By default, MySQL connections time out after a short period of time.  This needs to be changed.  In /etc/my.cnf:
+## Setup Instructions
+
+Install Python 3
+
+Install VirtualEnv (using python3) - see https://virtualenv.pypa.io/en/latest/installation.html
+
+Install LibFFI - ftp://sourceware.org/pub/libffi/libffi-3.2.tar.gz - make and put into C_INCLUDE_PATH and LD_LIBRARY_PATH
+
+Install Node (and NPM) - https://nodejs.org/en/
+
+Install Bower:
+```
+npm install bower
+```
+
+Install MySQL. By default, MySQL connections time out after a short period of time.  This needs to be changed.  In /etc/my.cnf:
 ```
 [mysqld]
 wait_timeout = 31536000
 interactive_timeout = 31536000
+```
+
+Finally:
+```
+virtualenv -p python3 flask
+cd setup
+/usr/local/mysql/bin/mysql < webcode.sql
+cd ../webcode
+./flask/bin/pip install -r requirements.txt
+    # Failed building wheel — not a problem - just make sure success at end
+node_modules/bower/bin/bower install
+./run.py
 ```
