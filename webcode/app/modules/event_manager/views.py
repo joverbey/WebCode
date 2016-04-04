@@ -11,3 +11,14 @@ def log_event(data, username):
         Event.log(user.username, data['type'], data['details'])
     else:
         print('Attempting to log event where username is None')
+
+
+@SocketHandler.on('preferences')
+def log_event(data, username):
+    user = session.query(User).filter(User.username == username).first()
+    if user is not None:  # Ensure that the user exists to prevent crashes
+        user.font_size = int(data['fontSize'])
+        user.theme = data['theme']
+        user.commit_to_session()
+    else:
+        print('Attempting to log event where username is None')

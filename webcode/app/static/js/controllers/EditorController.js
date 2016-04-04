@@ -15,7 +15,8 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     $scope.waitingOnJob = false;
 
     $scope.editor = ace.edit(document.getElementById('editor'));
-    $scope.editor.setTheme('ace/theme/twilight');
+    $scope.editor.setTheme($scope.prefs.theme);
+    $scope.editor.setFontSize($scope.prefs.fontSize);
     $scope.editor.commands.addCommand({
         name: 'Save',
         bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
@@ -404,4 +405,14 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     if (!socket) {
         $scope.$emit('requestSocket');
     }
+
+    $scope.$watch('prefs.theme', function(newTheme) {
+        $scope.editor.setTheme(newTheme);
+        $scope.updatePreferences();
+    });
+
+    $scope.$watch('prefs.fontSize', function(newFontSize) {
+        $scope.editor.setFontSize(newFontSize);
+        $scope.updatePreferences();
+    })
 }]);

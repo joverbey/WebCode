@@ -56,5 +56,7 @@ def get_me():
     return serve_response({
         'username': current_user.username,
         'displayName': current_user.display,
-        'isAdmin': current_user.admin
+        'isAdmin': current_user.admin,
+        'fontSize': current_user.font_size,
+        'theme': current_user.theme
     })

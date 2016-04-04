@@ -6,6 +6,10 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
     $scope.projects = [];
     $scope.showTree = true;
     $scope.isEditing = true;
+    $scope.prefs = { // have some defaults in case the preferences haven't loaded yet
+        theme: 'ace/theme/twilight',
+        fontSize: 12
+    };
     var username;
 
     $scope.EDIT_SESSION_TYPES = {
@@ -92,6 +96,8 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
                     $scope.username = response.data.data.username;
                     $scope.displayName = response.data.data.displayName;
                     $scope.isAdmin = response.data.data.isAdmin;
+                    $scope.prefs.fontSize = response.data.data.fontSize;
+                    $scope.prefs.theme = response.data.data.theme;
                     $scope.loggedIn = true;
                     connectToSocket();
                 },
@@ -142,6 +148,14 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
             title: 'Blank Project',
             editSession: ace.createEditSession('', "ace/mode/c_cpp")
         };
+    };
+
+    $scope.increaseFontSize = function() {
+        $scope.prefs.fontSize += 1
+    };
+
+    $scope.decreaseFontSize = function() {
+        $scope.prefs.fontSize -= 1
     };
 
     $scope.logIn = function() {
@@ -199,6 +213,14 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
         });
     };
 
+    $scope.updatePreferences = function() {
+        $scope.socket.send('preferences', {
+            theme: $scope.prefs.theme,
+            fontSize: $scope.prefs.fontSize,
+            username: username
+        });
+    };
+
     $scope.$on('isEditing', function(scope, value) {
         $scope.isEditing = !!value;
     });
@@ -221,5 +243,5 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
         if ($scope.socket) {
             $scope.$broadcast('openSocket', $scope.socket);
         }
-    })
+    });
 }]);
