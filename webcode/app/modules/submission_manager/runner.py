@@ -19,10 +19,10 @@ COMPILE_COMMAND = {
 RUN_COMMAND = {
     # 'oacc': '{0}/{1}',
     # 'cuda': '{0}/{1}',
-    # 'oacc': 'run_as_nobody {0}/{1}',
-    # 'cuda': 'run_as_nobody {0}/{1}',
-    'oacc': 'nvidia-docker run --rm -v /opt/pgi/linux86-64/16.1/lib:/opt/pgi/linux86-64/16.1/lib -v /lib:/lib -v /lib64:/lib64 -v {0}:/webcode nvidia/cuda /webcode/{1}',
-    'cuda': 'nvidia-docker run --rm -v {0}:/webcode nvidia/cuda /webcode/{1}'
+    'oacc': 'run_as_nobody {0}/{1}',
+    'cuda': 'run_as_nobody {0}/{1}',
+    # 'oacc': 'nvidia-docker run --rm -v /opt/pgi/linux86-64/16.1/lib:/opt/pgi/linux86-64/16.1/lib -v /lib:/lib -v /lib64:/lib64 -v {0}:/webcode nvidia/cuda /webcode/{1}',
+    # 'cuda': 'nvidia-docker run --rm -v {0}:/webcode nvidia/cuda /webcode/{1}'
 }
 FILE_EXTENSIONS_FROM_TYPE = {
     'cuda': '.cu',
@@ -164,7 +164,8 @@ class Runner:
                 'stdout': self._sanitize_output(stdout),
                 'exit_code': exit_code,
                 'will_execute': self.submission.run == 1 and exit_code == 0,
-                'queue_position': self.runner_thread.my_position(self.submission.username)
+                'queue_position': self.runner_thread.my_position(self.submission.username),
+                'timeout': status == TIMELIMIT_EXCEEDED
             })
         except:
             SocketHandler.emit('submit', {

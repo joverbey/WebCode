@@ -214,8 +214,13 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
                             $scope.waitingOnJob = false;
                         }
                     } else {
-                        $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput +
-                            '<p class="console-text">Execution finished with exit code ' + data.exit_code + '</p>');
+                        if (!data.timeout) {
+                            $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput +
+                                '<p class="console-text">Execution finished with exit code ' + data.exit_code + '</p>');
+                        } else {
+                            $scope.consoleOutput = $sce.trustAsHtml($scope.consoleOutput +
+                                '<p class="console-text">Execution was terminated. Programs are only allowed 45 seconds.</p>');
+                        }
                         $scope.waitingOnJob = false;
                     }
                 }
