@@ -29,8 +29,8 @@
 - [x] Bind key to run?  Ctrl+R
 - [ ] Automatically switch to project after closing the Create dialog
 - [ ] Show list of control keys somewhere - Ctrl+L, Ctrl+F (twice to replace), Ctrl+R
-- [ ] Integrate refactorings (CLI) into WebCode
 - [ ] Code cleanup
+- [ ] Integrate refactorings (CLI) into WebCode - put this on a separate branch
 
 ## Setup Instructions
 
