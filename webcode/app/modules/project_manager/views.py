@@ -50,7 +50,7 @@ def create_project():
 @login_required
 def download_project(project_id):
     project = session.query(Project).filter(Project.project_id == project_id).first()
-    return project.body.replace('\n', '\r\n'), 200
+    return project.body, 200
 
 
 @app.route('/api/projects/<int:project_id>', methods=['PUT'])
