@@ -105,10 +105,6 @@ int main(int argc, char **argv) {
         } else if (WIFSIGNALED(status)) {
             printf("Program killed by signal %d\n", WTERMSIG(status));
             return 128+status;
-        } else if (WIFSTOPPED(status)) {
-            printf("Program stopped by signal %d\n", WSTOPSIG(status));
-        } else if (WIFCONTINUED(status)) {
-            printf("Program continued\n");
         } else {
             printf("An error has occurred!\n");
             return 1;
