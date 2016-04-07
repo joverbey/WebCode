@@ -15,14 +15,20 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <time.h>
 
 /* Username under which the child process will execute */
 #define USERNAME "nobody"
+
+/* Time limit, in seconds, before the process is killed */
+#define TIMEOUT 45
 
 int main(int argc, char **argv) {
     struct passwd *passwd;
     pid_t child_pid;
     int status = 1;
+    int waitVal = 0;
+    time_t start;
 
     if (argc < 2) {
         fprintf(stderr, "Usage: run_as_nobody path [arg ...]\n");
@@ -59,21 +65,53 @@ int main(int argc, char **argv) {
         return 1;
 
     default:
-        do {
-            if (waitpid(child_pid, &status, WUNTRACED | WCONTINUED) < 0) {
-                perror("wait");
+        /* The parent process will have child_pid equal to the 
+           pid of the child process */
+
+        start = time(NULL); // Start our timer.
+
+        // Spin while waiting for child to finish.
+        while((waitVal = waitpid(child_pid, &status, WNOHANG)) == 0) {
+            sleep(1);  // Wait a second. (Remove this?)
+
+            // If we took too long, then kill the child.
+            if(time(NULL) > start + TIMEOUT)
+            {
+               fprintf(stderr, "Program took more than 45 seconds to execute.\n"); 
+                // Try killing it with kindness.
+                kill(child_pid, SIGTERM);
+                sleep(2); // Let the child exit gracefully.
+
+                // If the child is still going
+                if (waitpid(child_pid, &status, WNOHANG) == 0)
+                {
+                    // Force - kill it.
+                    kill(child_pid, SIGKILL);
+                    // Wait for the kill to be done.
+                    waitpid(child_pid, &status, 0);
+                }
+                
                 return 1;
             }
-            if (WIFEXITED(status)) {
-                return WEXITSTATUS(status);
-            } else if (WIFSIGNALED(status)) {
-                printf("Program killed by signal %d\n", WTERMSIG(status));
-                return 128+status;
-            } else if (WIFSTOPPED(status)) {
-                printf("Program stopped by signal %d\n", WSTOPSIG(status));
-            } else if (WIFCONTINUED(status)) {
-                printf("Program continued\n");
-            }
-        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
-    }
+        }
+
+        if (waitVal < 0) {
+            perror("wait");
+            return 1;
+        }
+
+        if (WIFEXITED(status)) {
+	    return WEXITSTATUS(status);
+        } else if (WIFSIGNALED(status)) {
+            printf("Program killed by signal %d\n", WTERMSIG(status));
+            return 128+status;
+        } else if (WIFSTOPPED(status)) {
+            printf("Program stopped by signal %d\n", WSTOPSIG(status));
+        } else if (WIFCONTINUED(status)) {
+            printf("Program continued\n");
+        } else {
+            printf("An error has occurred!\n");
+            return 1;
+        }
+   }
 }
