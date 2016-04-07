@@ -27,6 +27,12 @@
 - [x] Allow user to change theme/font size (student suggestion)
 - [x] Add button to download source code as .c/.cu file (student suggestion)
 - [x] Bind key to run?  Ctrl+R
+- [ ] In addition to "Compile Only", provide something like "Run in cuda-gdb and backtrace" (for debugging segfaults) that executes
+      ```run_as_nobody bash -c "yes | cuda-gdb --quiet --eval-command=run --eval-command=backtrace --eval-command=quit --args /path/to/submit"```
+- [ ] If we're going to add other Run commands anyway, two profiling commands are also useful: "Run with nvprof (summary)"
+      ```run_as_nobody nvprof --print-gpu-summary /path/to/submit```
+      and "Run with nvprof --print-gpu-trace"
+      ```run_as_nobody nvprof --print-gpu-trace /path/to/submit```
 - [ ] Automatically switch to project after closing the Create dialog
 - [ ] Show list of control keys somewhere - Ctrl+L, Ctrl+F (twice to replace), Ctrl+R
 - [ ] Code cleanup
