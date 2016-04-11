@@ -42,6 +42,9 @@
               </button>
               <ul uib-dropdown-menu>
                 <li><a href="" ng-click="compileAndRun(0)">Compile only</a></li>
+                <li><a href="" ng-click="compileAndRun(2)">Run in cuda-gdb and backtrace</a></li>
+                <li><a href="" ng-click="compileAndRun(3)">Run with nvprof (summary)</a></li>
+                <li><a href="" ng-click="compileAndRun(4)">Run with nvprof --print-gpu-trace</a></li>
               </ul>
             </div>
           </li>

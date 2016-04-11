@@ -9,7 +9,6 @@ from app import app
 from app.modules.sockets.socket_handler import SocketHandler
 
 
-ALLOWED_EXTENSIONS = ['c']
 COMPILE_COMMAND = {
     # 'oacc': 'gcc {0}.c -o {0}',
     # 'cuda': 'gcc {0}.c -o {0}',
@@ -17,12 +16,22 @@ COMPILE_COMMAND = {
     'cuda': 'nvcc -Xcompiler=-fopenmp -o {0} {0}.cu'
 }
 RUN_COMMAND = {
-    # 'oacc': '{0}/{1}',
-    # 'cuda': '{0}/{1}',
-    'oacc': 'run_as_nobody {0}/{1}',
-    'cuda': 'run_as_nobody {0}/{1}',
-    # 'oacc': 'nvidia-docker run --rm -v /opt/pgi/linux86-64/16.1/lib:/opt/pgi/linux86-64/16.1/lib -v /lib:/lib -v /lib64:/lib64 -v {0}:/webcode nvidia/cuda /webcode/{1}',
-    # 'cuda': 'nvidia-docker run --rm -v {0}:/webcode nvidia/cuda /webcode/{1}'
+    'cuda': {
+        # 1: '{0}/{1}',
+        1: 'run_as_nobody {0}/{1}',
+        # 1: 'nvidia-docker run --rm -v /opt/pgi/linux86-64/16.1/lib:/opt/pgi/linux86-64/16.1/lib -v /lib:/lib -v /lib64:/lib64 -v {0}:/webcode nvidia/cuda /webcode/{1}',
+        2: 'run_as_nobody bash -c "yes | cuda-gdb --quiet --eval-command=run --eval-command=backtrace --eval-command=quit --args {0}/{1}"',
+        3: 'run_as_nobody nvprof --print-gpu-summary /path/to/submit',
+        4: 'run_as_nobody nvprof --print-gpu-trace /path/to/submit'
+    },
+    'oacc': {
+        # 1: '{0}/{1}',
+        1: 'run_as_nobody {0}/{1}',
+        # 1: 'nvidia-docker run --rm -v {0}:/webcode nvidia/cuda /webcode/{1}',
+        2: 'run_as_nobody bash -c "yes | cuda-gdb --quiet --eval-command=run --eval-command=backtrace --eval-command=quit --args {0}/{1}"',
+        3: 'run_as_nobody nvprof --print-gpu-summary /path/to/submit',
+        4: 'run_as_nobody nvprof --print-gpu-trace /path/to/submit'
+    }
 }
 FILE_EXTENSIONS_FROM_TYPE = {
     'cuda': '.cu',
@@ -47,12 +56,6 @@ COMPILE_PART = 'compile'
 EXECUTE_PART = 'execute'
 
 
-def allowed_filetype(filename):
-    """Check to see if the filename is an allowed type or not"""
-    return ('.' in filename and
-            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS)
-
-
 class RunnerQueueThread(threading.Thread):
 
     def __init__(self):
@@ -69,10 +72,14 @@ class RunnerQueueThread(threading.Thread):
 
     def add(self, runner):
         username = runner.submission.username
+        to_remove = list()
         for run in self.runners:
             if run.submission.username == username:
-                self.runners.remove(run)
-                run.cancel(len(self.runners))
+                to_remove.append(run)
+
+        for run in to_remove:
+            self.runners.remove(run)
+            run.cancel(len(self.runners))
 
         self.runners.append(runner)
 
@@ -123,7 +130,7 @@ class Runner:
         status, result_code = self._compile_submission()
         self._update_status(status, COMPILE_PART, result_code)
 
-        if status == COMPILATION_SUCCESS and self.submission.run == 1:
+        if status == COMPILATION_SUCCESS and self.submission.run != 0:
             status, max_time, result_code = self._execute_submission()
             self._update_status(status, EXECUTE_PART, result_code)
         else:
@@ -163,7 +170,7 @@ class Runner:
                 'stderr': self._sanitize_output(stderr),
                 'stdout': self._sanitize_output(stdout),
                 'exit_code': exit_code,
-                'will_execute': self.submission.run == 1 and exit_code == 0,
+                'will_execute': self.submission.run != 0 and exit_code == 0,
                 'queue_position': self.runner_thread.my_position(self.submission.username),
                 'timeout': status == TIMELIMIT_EXCEEDED
             })
@@ -245,7 +252,7 @@ class Runner:
 
         # Create the subprocess
         process = subprocess.Popen(
-            shlex.split(RUN_COMMAND[self.submission.type].format(self.submission_path, name)),
+            shlex.split(RUN_COMMAND[self.submission.type][self.submission.run].format(self.submission_path, name)),
             stdout=open(os.path.join(directory, EXECUTE_PART + OUT_FILE_NAME), 'w'),
             stderr=open(os.path.join(directory, EXECUTE_PART + ERR_FILE_NAME), 'w'))
 
