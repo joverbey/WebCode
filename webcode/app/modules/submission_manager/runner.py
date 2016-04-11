@@ -21,16 +21,16 @@ RUN_COMMAND = {
         1: 'run_as_nobody {0}/{1}',
         # 1: 'nvidia-docker run --rm -v /opt/pgi/linux86-64/16.1/lib:/opt/pgi/linux86-64/16.1/lib -v /lib:/lib -v /lib64:/lib64 -v {0}:/webcode nvidia/cuda /webcode/{1}',
         2: 'run_as_nobody bash -c "yes | cuda-gdb --quiet --eval-command=run --eval-command=backtrace --eval-command=quit --args {0}/{1}"',
-        3: 'run_as_nobody nvprof --print-gpu-summary /path/to/submit',
-        4: 'run_as_nobody nvprof --print-gpu-trace /path/to/submit'
+        3: 'run_as_nobody nvprof --print-gpu-summary {0}/{1}',
+        4: 'run_as_nobody nvprof --print-gpu-trace {0}/{1}'
     },
     'oacc': {
         # 1: '{0}/{1}',
         1: 'run_as_nobody {0}/{1}',
         # 1: 'nvidia-docker run --rm -v {0}:/webcode nvidia/cuda /webcode/{1}',
         2: 'run_as_nobody bash -c "yes | cuda-gdb --quiet --eval-command=run --eval-command=backtrace --eval-command=quit --args {0}/{1}"',
-        3: 'run_as_nobody nvprof --print-gpu-summary /path/to/submit',
-        4: 'run_as_nobody nvprof --print-gpu-trace /path/to/submit'
+        3: 'run_as_nobody nvprof --print-gpu-summary {0}/{1}',
+        4: 'run_as_nobody nvprof --print-gpu-trace {0}/{1}'
     }
 }
 FILE_EXTENSIONS_FROM_TYPE = {
