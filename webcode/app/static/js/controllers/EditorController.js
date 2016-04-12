@@ -183,7 +183,7 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         var lines = stderr.split('\n');
         var output = '';
         for (var i = 0; i < lines.length; i++) {
-            output += '<p class="warning"><pre>' + lines[i] + '</pre></p>';
+            output += '<pre class="warning">' + lines[i] + '</pre>';
         }
         return output;
     };
