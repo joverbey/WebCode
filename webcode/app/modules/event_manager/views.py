@@ -5,7 +5,7 @@ from app.modules.user_manager.models import User
 
 
 @SocketHandler.on('event')
-def log_event(data, username):
+def log_event(conn, data, username):
     user = session.query(User).filter(User.username == username).first()
     if user is not None:  # Ensure that the user exists to prevent crashes
         Event.log(user.username, data['type'], data['details'])
@@ -14,7 +14,7 @@ def log_event(data, username):
 
 
 @SocketHandler.on('preferences')
-def log_event(data, username):
+def log_event(conn, data, username):
     user = session.query(User).filter(User.username == username).first()
     if user is not None:  # Ensure that the user exists to prevent crashes
         user.font_size = int(data['fontSize'])

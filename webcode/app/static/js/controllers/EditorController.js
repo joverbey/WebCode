@@ -231,6 +231,11 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
             $scope.$apply();
         });
 
+        socket.on('saved', function(data) {
+            $scope.projects[data.project_id].last_edited = data.save_time;
+            $scope.$apply();
+        });
+
         $scope.multipleClients = false;
         socket.on('multiple_clients', function() {
             $scope.multipleClients = true;
@@ -258,7 +263,6 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
     });
 
     $scope.$on('onlineChange', function(scope, isOnline) {
-        console.log('got online change', isOnline);
         if (isOnline) {
             hideDisconnectedModal();
         } else {
@@ -278,7 +282,6 @@ app.controller('EditorController', ['$scope', '$http', '$window', '$interval', '
         if (newValue !== project.body) {
             var curPos = $scope.editor.getCursorPosition();
             project.body = newValue;
-            project.last_edited = Date.now() / 1000;
             socket.send('save', {
                 username: $scope.username,
                 project_id: projectId,

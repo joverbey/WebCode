@@ -69,13 +69,17 @@ def edit_project(project_id):
 
 
 @SocketHandler.on('save')
-def on_save(data, username):
+def on_save(conn, data, username):
     """Save the project"""
     project = (session.query(Project)
-               .filter(Project.project_id == data['project_id']
-                       and Project.username == data['username']).first())
+               .filter(Project.project_id == data['project_id'] and
+                       Project.username == data['username']).first())
     project.body = data['body']
     project.cursor_x = data['cursor_x']
     project.cursor_y = data['cursor_y']
     project.last_edited = int(time.time())
     project.commit_to_session()
+    SocketHandler.send(conn, 'saved', {
+        'project_id': str(project.project_id),
+        'save_time': project.last_edited
+    })

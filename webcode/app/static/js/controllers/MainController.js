@@ -230,12 +230,10 @@ app.controller('MainController', ['$scope', '$http', '$window', function($scope,
     });
 
     window.addEventListener('online', function() {
-        console.log('online');
         $scope.$broadcast('onlineChange', true);
         $scope.reconnectToSocket();
     });
     window.addEventListener('offline', function() {
-        console.log('offline');
         $scope.$broadcast('onlineChange', false);
     });
 

@@ -114,7 +114,7 @@ class SocketHandler(tornado.websocket.WebSocketHandler):
         try:
             messageDict = loads(message)
             if messageDict['eventType'] in self.callbacks:
-                self.callbacks[messageDict['eventType']](messageDict['data'], messageDict['data']['username'])
+                self.callbacks[messageDict['eventType']](self, messageDict['data'], messageDict['data']['username'])
             else:
                 print('not in callbacks: ' + messageDict['eventType'])
         except Exception as e:
