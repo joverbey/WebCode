@@ -14,7 +14,7 @@ if __name__ == "__main__":
             (r'/websocket', SocketHandler),
             (r'.*', FallbackHandler, dict(fallback=container))
         ])
-        server.listen(8000)
+        server.listen(8000, '0.0.0.0')
         IOLoop.instance().start()
 
     if app.config['DEBUG']:
