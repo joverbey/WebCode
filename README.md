@@ -7,9 +7,9 @@
   - [x] Log if the user is active (editing/scrolling/etc.) or inactive once every 30 seconds/minute (with timestamp)
   - [x] Automatically save the user's code to the server once every 30 seconds/minute
   - [x] Warn (lock editor?) if the connection is lost
-- [ ] Compile code, displaying warnings/errors
-  - [ ] Compile CUDA code
-  - [ ] Compile OpenACC code
+- [x] Compile code, displaying warnings/errors
+  - [x] Compile CUDA code
+  - [x] Compile OpenACC code
   - [x] Compile basic C code
   - [x] Display warnings/errors from compilation
   - [x] Log that the user compiled the code together with a timestamp and whether errors/warnings produced
