@@ -38,7 +38,16 @@
 - [ ] Code cleanup
 - [ ] Integrate refactorings (CLI) into WebCode - put this on a separate branch
 
+## Miscellaneous Notes
+
+To recreate webcode.sql (i.e., dump database structure):
+```
+mysqldump -u root -p -d --add-drop-database --result-file=webcode.sql --databases webcode
+```
+
 ## Setup Instructions
+
+### Prerequisites
 
 Install Python 3
 
@@ -48,26 +57,48 @@ Install LibFFI - ftp://sourceware.org/pub/libffi/libffi-3.2.tar.gz - make and pu
 
 Install Node (and NPM) - https://nodejs.org/en/
 
-Install Bower:
-```
-npm install bower
-```
+Install MySQL (MariaDB on CentOS).
 
-Install MySQL. By default, MySQL connections time out after a short period of time.  This needs to be changed.  In /etc/my.cnf:
+By default, MySQL connections time out after a short period of time.  This needs to be changed.  In /etc/my.cnf:
 ```
 [mysqld]
 wait_timeout = 31536000
 interactive_timeout = 31536000
 ```
 
-Finally:
+### Setting Up WebCode
+From the WebCode directory:
 ```
+cd webcode
+npm install bower
 virtualenv -p python3 flask
-cd setup
-/usr/local/mysql/bin/mysql < webcode.sql
-cd ../webcode
 ./flask/bin/pip install -r requirements.txt
-    # Failed building wheel — not a problem - just make sure success at end
+    # If you get "failed building wheel", no problem; just make sure success at end
 node_modules/bower/bin/bower install
+```
+Then create webcode/app/config.py, including the MySQL password.
+
+Finally, follow the instructions at the top of ```webcode/run_as_nobody.c``` to
+compile run_as_nobody and install it in /usr/bin or another directory on the PATH.
+
+### Database Creation
+From the WebCode directory:
+```
+cd setup
+mysql < webcode.sql
+```
+
+### User Creation
+From the WebCode directory:
+```
+cd webcode
+flask/bin/python3 make_user.py
+```
+
+### Running the Server
+From the WebCode directory:
+```
+cd webcode
 ./run.py
 ```
+Then browse to http://localhost:8000
