@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.26, for osx10.10 (x86_64)
+-- MySQL dump 10.14  Distrib 5.5.47-MariaDB, for Linux (x86_64)
 --
 -- Host: localhost    Database: webcode
 -- ------------------------------------------------------
--- Server version	5.6.26
+-- Server version	5.5.47-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -26,31 +26,21 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `webcode` /*!40100 DEFAULT CHARACTER SE
 USE `webcode`;
 
 --
--- Table structure for table `templates`
+-- Table structure for table `events`
 --
 
-DROP TABLE IF EXISTS `templates`;
+DROP TABLE IF EXISTS `events`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `templates` (
-  `title` varchar(60) NOT NULL,
-  `body` text,
-  `cursor_x` int(10) NOT NULL,
-  `cursor_y` int(10) NOT NULL,
-  `type` varchar(4) NOT NULL,
-  `template_id` int(10) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`template_id`)
-) AUTO_INCREMENT=1 ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE `events` (
+  `username` varchar(20) NOT NULL,
+  `timestamp` int(11) NOT NULL,
+  `event_type` varchar(10) NOT NULL,
+  `details` varchar(255) DEFAULT NULL,
+  `event_id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`event_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=43213 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `templates`
---
-
-LOCK TABLES `templates` WRITE;
-/*!40000 ALTER TABLE `templates` DISABLE KEYS */;
-/*!40000 ALTER TABLE `templates` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `projects`
@@ -68,18 +58,11 @@ CREATE TABLE `projects` (
   `last_edited` int(11) NOT NULL,
   `template_id` int(10) NOT NULL,
   `project_id` int(10) NOT NULL AUTO_INCREMENT,
+  `title` varchar(30) NOT NULL,
+  `hide` int(1) NOT NULL,
   PRIMARY KEY (`project_id`)
-) AUTO_INCREMENT=1 ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=365 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `projects`
---
-
-LOCK TABLES `projects` WRITE;
-/*!40000 ALTER TABLE `projects` DISABLE KEYS */;
-/*!40000 ALTER TABLE `projects` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `submissions`
@@ -95,18 +78,29 @@ CREATE TABLE `submissions` (
   `type` varchar(4) NOT NULL,
   `project_id` int(10) NOT NULL,
   `run` tinyint(1) NOT NULL,
+  `exit_code` int(11) DEFAULT NULL,
+  `result` varchar(16) DEFAULT NULL,
   PRIMARY KEY (`job`)
-) AUTO_INCREMENT=1 ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14645 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `submissions`
+-- Table structure for table `templates`
 --
 
-LOCK TABLES `submissions` WRITE;
-/*!40000 ALTER TABLE `submissions` DISABLE KEYS */;
-/*!40000 ALTER TABLE `submissions` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `templates`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `templates` (
+  `title` varchar(60) NOT NULL,
+  `body` text,
+  `cursor_x` int(10) NOT NULL,
+  `cursor_y` int(10) NOT NULL,
+  `type` varchar(4) NOT NULL,
+  `template_id` int(10) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`template_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `users`
@@ -121,19 +115,11 @@ CREATE TABLE `users` (
   `display` varchar(60) NOT NULL,
   `admin` tinyint(1) NOT NULL,
   `last_project` int(10) NOT NULL,
+  `font_size` int(10) NOT NULL DEFAULT '12',
+  `theme` varchar(60) NOT NULL DEFAULT 'ace/theme/twilight',
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `users`
---
-
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES ('william','$2b$12$t5dC67gYk8idCT/zu.nMguTENGZ70t.wFV3yoEZTHdkX5Vsop4RJK','William Hester',1,-1);
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -144,4 +130,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-02-26 12:21:26
+-- Dump completed on 2016-05-19 20:08:22
