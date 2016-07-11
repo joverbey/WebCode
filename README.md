@@ -1,49 +1,8 @@
 # WebCode
 
-## Essential
-- [x] Log in (we can create credentials in advance, if it's easier)
-- [x] Select a project to open (we can create and set up projects on the server in advance)
-- [x] Edit code - cf. http://ace.ajax.org
-  - [x] Log if the user is active (editing/scrolling/etc.) or inactive once every 30 seconds/minute (with timestamp)
-  - [x] Automatically save the user's code to the server once every 30 seconds/minute
-  - [x] Warn (lock editor?) if the connection is lost
-- [x] Compile code, displaying warnings/errors
-  - [x] Compile CUDA code
-  - [x] Compile OpenACC code
-  - [x] Compile basic C code
-  - [x] Display warnings/errors from compilation
-  - [x] Log that the user compiled the code together with a timestamp and whether errors/warnings produced
-  - [x] Save the code so we can view that version
-- [x] Run and display the program's output
-  - [x] Log that the user ran the code together with a timestamp, the exit code, and what output was produced
+WebCode provides the ability to write, edit, and run CUDA and OpenACC programs from a Web browser.  It was used in Auburn University's GPU Programming class during the Spring 2016 semester and is based on [AUACM](https://github.com/AuburnACM/auacm).
 
-## High Priority
-- [x] Put compilations and runs in a queue since we only have one PGCC license and one GPU, and we don't want jobs affecting each other's runtimes
-- [x] Allow the user to view (or revert to?) a previous version of the code
-- [ ] We might have the user's code output a SVG image (we can use a fixed filename, like output.svg) -- if the code outputs this file, display the image along with the output
-- [ ] For OpenACC projects, provide an option to compile and run /without/ OpenACC enabled (i.e., without -ta=nvidia)
-
-## Post-Release Bug Fixes/Feature Additions
-- [x] Allow user to change theme/font size (student suggestion)
-- [x] Add button to download source code as .c/.cu file (student suggestion)
-- [x] Bind key to run?  Ctrl+R
-- [x] In addition to "Compile Only", provide something like "Run in cuda-gdb and backtrace" (for debugging segfaults) that executes
-      ```bash -c "yes | cuda-gdb --quiet --eval-command=run --eval-command=backtrace --eval-command=quit --args /path/to/submit"```
-- [x] If we're going to add other Run commands anyway, two profiling commands are also useful: "Run with nvprof (summary)"
-      ```nvprof --print-gpu-summary /path/to/submit```
-      and "Run with nvprof --print-gpu-trace"
-      ```nvprof --print-gpu-trace /path/to/submit```
-- [ ] Automatically switch to project after closing the Create dialog
-- [ ] Show list of control keys somewhere - Ctrl+L, Ctrl+F (twice to replace), Ctrl+R
-- [ ] Code cleanup
-- [ ] Integrate refactorings (CLI) into WebCode - put this on a separate branch
-
-## Miscellaneous Notes
-
-To recreate webcode.sql (i.e., dump database structure):
-```
-mysqldump -u root -p -d --add-drop-database --result-file=webcode.sql --databases webcode
-```
+It needs a better name.  Sometimes we refer to it affectionately as El Spice (an anagram of ``eclipse''), particularly when it is sluggish or we discover a bug.
 
 ## Setup Instructions
 
@@ -103,3 +62,10 @@ cd webcode
 ./run.py
 ```
 Then browse to http://localhost:8000
+
+## Miscellaneous Notes
+
+To recreate webcode.sql (i.e., dump database structure):
+```
+mysqldump -u root -p -d --add-drop-database --result-file=webcode.sql --databases webcode
+```
