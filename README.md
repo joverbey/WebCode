@@ -70,6 +70,7 @@ interactive_timeout = 31536000
 From the WebCode directory:
 ```
 cd webcode
+mkdir app/data/submits
 npm install bower
 virtualenv -p python3 flask
 ./flask/bin/pip install -r requirements.txt
